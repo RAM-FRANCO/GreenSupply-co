@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useRouter } from "next/router";
 import { Box, Grid2, Typography } from "@mui/material";
 import StatsGrid from "@/components/dashboard/StatsGrid";
 import StockBarChart from "@/components/dashboard/StockBarChart";
 import ValueLineChart from "@/components/dashboard/ValueLineChart";
-import InventoryTable from "@/components/dashboard/InventoryTable";
+import DataTable from "@/components/common/DataTable";
+import { useInventoryColumns } from "@/hooks/columns/useInventoryColumns";
 import DashboardSkeleton from "@/components/dashboard/DashboardSkeleton";
 import ErrorState from "@/components/common/ErrorState";
 import type {
@@ -113,6 +115,12 @@ export default function Home() {
     [products.length, warehouses.length, totalValue, lowStockCount],
   );
 
+  const router = useRouter();
+
+  const inventoryColumns = useInventoryColumns({
+    onEdit: (id) => void router.push(`/products/edit/${id}`),
+  });
+
   // Early returns AFTER all hooks
   if (loading) {
     return <DashboardSkeleton />;
@@ -123,7 +131,7 @@ export default function Home() {
   }
 
   return (
-    <Box sx={{ p: 0 }}>
+    <Box sx={{ p: 1 }}>
       {/* Header Section */}
       <Box
         sx={{
@@ -163,7 +171,11 @@ export default function Home() {
       </Grid2>
 
       {/* Detailed Table */}
-      <InventoryTable inventory={inventoryOverview} />
+      <DataTable
+        data={inventoryOverview}
+        columns={inventoryColumns}
+        title="Inventory Overview"
+      />
     </Box>
   );
 }
