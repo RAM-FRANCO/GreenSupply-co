@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme, ThemeOptions } from '@mui/material/styles';
 import { Inter } from 'next/font/google';
 
 export const inter = Inter({
@@ -6,7 +6,26 @@ export const inter = Inter({
   display: 'swap',
 });
 
-const theme = createTheme({
+/**
+ * Custom palette colors for status indicators and stat cards
+ */
+const customPalette = {
+  text: {
+    muted: '#9CA3AF', // Gray-400 for captions/secondary labels
+  },
+  status: {
+    lowStock: { bg: '#FEE2E2', text: '#991B1B' },
+    inStock: { bg: '#DCFCE7', text: '#166534' },
+  },
+  stats: {
+    blue: { bg: '#DBEAFE', icon: '#1976D2' },
+    purple: { bg: '#F3E8FF', icon: '#9333EA' },
+    green: { bg: '#DCFCE7', icon: '#2E7D32' },
+    red: { bg: '#FEE2E2', icon: '#DC2626' },
+  },
+};
+
+const themeOptions: ThemeOptions = {
   typography: {
     fontFamily: inter.style.fontFamily,
   },
@@ -50,6 +69,9 @@ const theme = createTheme({
       },
     },
   },
-});
+};
 
+const theme = createTheme(themeOptions);
+
+export { customPalette };
 export default theme;
