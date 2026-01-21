@@ -142,3 +142,5 @@ npm run lint
 - MUI components are used throughout for consistent UI
 - State management is done via React's useState/useEffect hooks
 - No TypeScript - plain JavaScript implementation
+
+
