@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "referenceNumber": "TRF-20260121-0001",
+    "productId": 1,
+    "fromWarehouseId": 1,
+    "toWarehouseId": 2,
+    "quantity": 10,
+    "status": "completed",
+    "createdAt": "2026-01-21T20:05:16.330Z",
+    "completedAt": "2026-01-21T20:05:16.330Z",
+    "notes": "Test Optimization"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "eventType": "TRANSFER_OUT",
+    "referenceNumber": "TRF-20260121-0001",
+    "productId": 1,
+    "warehouseId": 1,
+    "quantityChange": -10,
+    "quantityBefore": 250,
+    "quantityAfter": 240,
+    "timestamp": "2026-01-21T20:05:16.332Z",
+    "notes": "Test Optimization"
+  },
+  {
+    "id": 2,
+    "eventType": "TRANSFER_IN",
+    "referenceNumber": "TRF-20260121-0001",
+    "productId": 1,
+    "warehouseId": 2,
+    "quantityChange": 10,
+    "quantityBefore": 150,
+    "quantityAfter": 160,
+    "timestamp": "2026-01-21T20:05:16.332Z",
+    "notes": "Test Optimization"
+  }
+]
