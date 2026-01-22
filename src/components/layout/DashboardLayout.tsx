@@ -16,6 +16,9 @@ import {
   ListItemText,
   useTheme,
   Avatar,
+  Badge,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -30,6 +33,9 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import SpaIcon from "@mui/icons-material/Spa";
 import { alpha } from "@mui/material/styles";
 import { customPalette } from "@/theme/theme";
+import { useAlerts } from "@/hooks/useAlerts";
+import AlertDetailsModal from "@/components/alerts/AlertDetailsModal";
+import type { EnrichedAlert } from "@/types/alerts";
 
 const DRAWER_WIDTH = 256;
 
@@ -47,7 +53,7 @@ const MENU_ITEMS: MenuItem[] = [
   { text: "Categories", icon: <CategoryIcon />, href: "/categories" },
   { text: "Warehouses", icon: <WarehouseIcon />, href: "/warehouses" },
   { type: "header", text: "Operations" },
-  { text: "Stock Levels", icon: <BarChartIcon />, href: "/stock" },
+  { text: "Stock Levels", icon: <BarChartIcon />, href: "/alerts" },
   { text: "Transfers", icon: <SwapHorizIcon />, href: "/transfers" },
   { type: "header", text: "Reports" },
   { text: "Sales Trends", icon: <TrendingUpIcon />, href: "/trends" },
@@ -61,6 +67,35 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
+  const { stats, alerts, updateAlertStatus, reorderStock } = useAlerts();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedAlert, setSelectedAlert] = useState<EnrichedAlert | null>(
+    null,
+  );
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleAlertClick = async (alert: EnrichedAlert) => {
+    setSelectedAlert(alert);
+    handleMenuClose();
+
+    // Mark as acknowledged (read) if it's currently active
+    if (alert.status === "active") {
+      try {
+        await updateAlertStatus(alert.product.id, alert.warehouse.id, {
+          status: "acknowledged",
+        });
+      } catch (error) {
+        console.error("Failed to acknowledge alert", error);
+      }
+    }
+  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -229,9 +264,128 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </IconButton>
 
           <Box sx={{ flexGrow: 1 }} />
-          <IconButton sx={{ color: "text.secondary", mr: 2 }}>
-            <NotificationsNoneIcon />
+          <IconButton
+            sx={{ color: "text.secondary", mr: 2 }}
+            onClick={handleMenuOpen}
+          >
+            <Badge
+              badgeContent={stats.unread}
+              color="error"
+              invisible={stats.unread === 0}
+            >
+              <NotificationsNoneIcon />
+            </Badge>
           </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+            transformOrigin={{ horizontal: "right", vertical: "top" }}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            disableScrollLock={true}
+            PaperProps={{
+              sx: {
+                width: 320,
+                maxHeight: 400,
+                mt: 1,
+              },
+            }}
+          >
+            <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
+              <Typography variant="subtitle2" fontWeight="bold">
+                Notifications
+              </Typography>
+            </Box>
+            {stats.critical + stats.warning === 0 ? (
+              <Box sx={{ p: 3, textAlign: "center" }}>
+                <Typography variant="body2" color="text.secondary">
+                  No new alerts
+                </Typography>
+              </Box>
+            ) : (
+              alerts
+                .filter(
+                  (a) => a.severity === "critical" || a.severity === "warning",
+                )
+                .slice(0, 5)
+                .map((alert) => (
+                  <MenuItem
+                    key={alert.id}
+                    onClick={() => handleAlertClick(alert)}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      gap: 0.5,
+                      py: 1.5,
+                      borderBottom: 1,
+                      borderColor: "divider",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        width: "100%",
+                      }}
+                    >
+                      <Typography variant="body2" fontWeight="600" noWrap>
+                        {alert.product.name}
+                      </Typography>
+                      {alert.severity === "critical" && (
+                        <Typography
+                          variant="caption"
+                          color="error.main"
+                          fontWeight="bold"
+                        >
+                          CRITICAL
+                        </Typography>
+                      )}
+                    </Box>
+                    <Typography variant="caption" color="text.secondary">
+                      Stock: {alert.currentStock} (Target: {alert.reorderPoint})
+                    </Typography>
+                  </MenuItem>
+                ))
+            )}
+            <Box sx={{ p: 1 }}>
+              <ListItemButton
+                onClick={() => {
+                  handleMenuClose();
+                  router.push("/alerts");
+                }}
+                sx={{
+                  justifyContent: "center",
+                  borderRadius: 1,
+                  color: "primary.main",
+                  typography: "body2",
+                  fontWeight: 600,
+                }}
+              >
+                View All Alerts
+              </ListItemButton>
+            </Box>
+          </Menu>
+          <AlertDetailsModal
+            open={Boolean(selectedAlert)}
+            alert={selectedAlert}
+            onClose={() => setSelectedAlert(null)}
+            onReorder={async () => {
+              if (selectedAlert) {
+                try {
+                  await reorderStock(
+                    selectedAlert.product.id,
+                    selectedAlert.warehouse.id,
+                    selectedAlert.recommendedQuantity,
+                  );
+                  setSelectedAlert(null);
+                } catch (err) {
+                  console.error("Reorder failed", err);
+                }
+              }
+            }}
+          />
+
           <Avatar
             sx={{
               bgcolor: "primary.main",
