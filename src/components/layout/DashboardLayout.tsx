@@ -282,12 +282,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             onClose={handleMenuClose}
             transformOrigin={{ horizontal: "right", vertical: "top" }}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-            disableScrollLock={true}
-            PaperProps={{
-              sx: {
-                width: 320,
-                maxHeight: 400,
-                mt: 1,
+            slotProps={{
+              paper: {
+                sx: {
+                  width: 320,
+                  maxHeight: 400,
+                  mt: 1,
+                },
               },
             }}
           >

@@ -11,7 +11,7 @@ import {
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useState } from "react";
 import { Category } from "@/types/category";
-
+import { getCategoryColor } from "@/utils/categoryColors";
 
 interface CategoryCardProps {
   readonly category: Category;
@@ -44,38 +44,7 @@ export default function CategoryCard({
     onDelete(category);
   };
 
-  // Map color names to approximate hex values for the background/text logic if needed
-  // But for now, relying on simple classes or inline styles if dynamic colors are passed as strings like 'green', 'blue'
-  // The layout uses tailwind classes like 'bg-green-50 text-green-600'.
-  // We can map 'green' to 'success.light' / 'success.main' or custom palette if available.
-  // For simplicity and matching the layout's "theme", we can use a helper or just mapping.
-
-  const getColorStyles = (color: string) => {
-    // Basic mapping to MUI standard intent colors or custom ones
-    // Using string matching to approximate the layout look
-    switch (color) {
-      case "green":
-        return { bg: "success.light", text: "success.dark" }; // or custom green
-      case "blue":
-        return { bg: "info.light", text: "info.dark" };
-      case "orange":
-        return { bg: "warning.light", text: "warning.dark" };
-      case "teal":
-        return { bg: "#e0f2f1", text: "#00695c" }; // teal-50, teal-800
-      case "amber":
-        return { bg: "#fff8e1", text: "#ff8f00" }; // amber-50, amber-800
-      case "indigo":
-        return { bg: "#e8eaf6", text: "#283593" }; // indigo-50, indigo-800
-      case "yellow":
-        return { bg: "#fffde7", text: "#fbc02d" }; // yellow-50, yellow-700
-      case "gray":
-        return { bg: "#f5f5f5", text: "#616161" };
-      default:
-        return { bg: "grey.100", text: "grey.800" };
-    }
-  };
-
-  const colorStyles = getColorStyles(category.color);
+  const colorStyles = getCategoryColor(category.name);
 
   return (
     <Card
@@ -180,7 +149,6 @@ export default function CategoryCard({
         onClose={handleCloseMenu}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        disableScrollLock={true}
       >
         <MenuItem onClick={handleEdit}>Edit</MenuItem>
         <MenuItem onClick={handleDelete} sx={{ color: "error.main" }}>
