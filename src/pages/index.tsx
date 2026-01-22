@@ -1,9 +1,18 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+<<<<<<< HEAD
+import { useRouter } from "next/router";
+=======
+>>>>>>> feat/1-dashboard-redesign-clean
 import { Box, Grid2, Typography } from "@mui/material";
 import StatsGrid from "@/components/dashboard/StatsGrid";
 import StockBarChart from "@/components/dashboard/StockBarChart";
 import ValueLineChart from "@/components/dashboard/ValueLineChart";
+<<<<<<< HEAD
+import DataTable from "@/components/common/DataTable";
+import { useInventoryColumns } from "@/hooks/columns/useInventoryColumns";
+=======
 import InventoryTable from "@/components/dashboard/InventoryTable";
+>>>>>>> feat/1-dashboard-redesign-clean
 import DashboardSkeleton from "@/components/dashboard/DashboardSkeleton";
 import ErrorState from "@/components/common/ErrorState";
 import type {
@@ -113,6 +122,15 @@ export default function Home() {
     [products.length, warehouses.length, totalValue, lowStockCount],
   );
 
+<<<<<<< HEAD
+  const router = useRouter();
+
+  const inventoryColumns = useInventoryColumns({
+    onEdit: (id) => void router.push(`/products/edit/${id}`),
+  });
+
+=======
+>>>>>>> feat/1-dashboard-redesign-clean
   // Early returns AFTER all hooks
   if (loading) {
     return <DashboardSkeleton />;
@@ -123,7 +141,11 @@ export default function Home() {
   }
 
   return (
+<<<<<<< HEAD
+    <Box sx={{ p: 1 }}>
+=======
     <Box sx={{ p: 0 }}>
+>>>>>>> feat/1-dashboard-redesign-clean
       {/* Header Section */}
       <Box
         sx={{
@@ -163,7 +185,15 @@ export default function Home() {
       </Grid2>
 
       {/* Detailed Table */}
+<<<<<<< HEAD
+      <DataTable
+        data={inventoryOverview}
+        columns={inventoryColumns}
+        title="Inventory Overview"
+      />
+=======
       <InventoryTable inventory={inventoryOverview} />
+>>>>>>> feat/1-dashboard-redesign-clean
     </Box>
   );
 }

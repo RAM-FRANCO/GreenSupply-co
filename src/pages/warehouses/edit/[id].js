@@ -14,6 +14,35 @@ import {
 } from '@mui/material';
 import InventoryIcon from '@mui/icons-material/Inventory';
 
+import path from 'path';
+import fs from 'fs/promises';
+
+// Server-side data fetching for static generation
+export async function getStaticPaths() {
+  const filePath = path.join(process.cwd(), 'data', 'warehouses.json');
+  try {
+    const jsonData = await fs.readFile(filePath, 'utf8');
+    const warehouses = JSON.parse(jsonData);
+
+    const paths = warehouses.map((warehouse) => ({
+      params: { id: warehouse.id.toString() },
+    }));
+
+    return { paths, fallback: 'blocking' };
+  } catch (error) {
+    return { paths: [], fallback: 'blocking' };
+  }
+}
+
+export async function getStaticProps({ params }) {
+  return {
+    props: {
+      id: params.id,
+    },
+    revalidate: 10,
+  };
+}
+
 export default function EditWarehouse() {
   const [warehouse, setWarehouse] = useState({
     name: '',

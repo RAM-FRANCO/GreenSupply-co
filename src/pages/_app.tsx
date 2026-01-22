@@ -4,14 +4,17 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "@/theme/theme";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <DashboardLayout>
-        <Component {...pageProps} />
-      </DashboardLayout>
-    </ThemeProvider>
+    <QueryProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <DashboardLayout>
+          <Component {...pageProps} />
+        </DashboardLayout>
+      </ThemeProvider>
+    </QueryProvider>
   );
 }

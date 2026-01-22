@@ -24,6 +24,7 @@ import CategoryIcon from "@mui/icons-material/Category";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import SettingsIcon from "@mui/icons-material/Settings";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import SpaIcon from "@mui/icons-material/Spa";
@@ -45,8 +46,10 @@ const MENU_ITEMS: MenuItem[] = [
   { text: "All Products", icon: <Inventory2Icon />, href: "/products" },
   { text: "Categories", icon: <CategoryIcon />, href: "/categories" },
   { text: "Warehouses", icon: <WarehouseIcon />, href: "/warehouses" },
-  { type: "header", text: "Reports" },
+  { type: "header", text: "Operations" },
   { text: "Stock Levels", icon: <BarChartIcon />, href: "/stock" },
+  { text: "Transfers", icon: <SwapHorizIcon />, href: "/transfers" },
+  { type: "header", text: "Reports" },
   { text: "Sales Trends", icon: <TrendingUpIcon />, href: "/trends" },
 ];
 
