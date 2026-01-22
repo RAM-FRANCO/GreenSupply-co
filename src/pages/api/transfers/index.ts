@@ -11,10 +11,12 @@ import {
 } from '@/lib/transferService';
 import type { TransferQueryParams, CreateTransferRequest } from '@/types/transfers';
 
+import { transferSubmitSchema } from '@/schemas/transferSchema';
+
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (req.method === 'GET') {
-      // Parse query params
+      // ... existing GET logic
       const params: TransferQueryParams = {
         productId: req.query.productId ? Number(req.query.productId) : undefined,
         warehouseId: req.query.warehouseId ? Number(req.query.warehouseId) : undefined,
@@ -30,7 +32,17 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     if (req.method === 'POST') {
-      const request: CreateTransferRequest = req.body;
+      // Validate request body against schema
+      const validationResult = transferSubmitSchema.safeParse(req.body);
+
+      if (!validationResult.success) {
+        return res.status(400).json({
+          message: 'Validation failed',
+          errors: validationResult.error.flatten().fieldErrors,
+        });
+      }
+
+      const request: CreateTransferRequest = validationResult.data;
       const transfer = executeTransfer(request);
       return res.status(201).json(transfer);
     }
