@@ -19,6 +19,40 @@ import { Product } from "../../../types";
 import FormSkeleton from "../../../components/common/FormSkeleton";
 import ErrorState from "../../../components/common/ErrorState";
 import { PRODUCT_CATEGORIES } from "../../../utils/constants";
+import path from "path";
+import fs from "fs/promises";
+
+// Server-side data fetching for static generation
+export async function getStaticPaths() {
+  const filePath = path.join(process.cwd(), "data", "products.json");
+  try {
+    const jsonData = await fs.readFile(filePath, "utf8");
+    const products: Product[] = JSON.parse(jsonData);
+
+    const paths = products.map((product) => ({
+      params: { id: product.id.toString() },
+    }));
+
+    return { paths, fallback: "blocking" };
+  } catch (error) {
+    console.error("Error in getStaticPaths:", error);
+    return { paths: [], fallback: "blocking" };
+  }
+}
+
+export async function getStaticProps({ params }: { params: { id: string } }) {
+  // We can pass the ID, but we'll fetch the fresh data client-side or
+  // read it here to pre-populate. for consistency with existing code
+  // which does client-side fetching in useEffect, we'll keep the client fetch
+  // but we MUST have getStaticPaths for dynamic routes in a static export
+  // or simple build.
+  return {
+    props: {
+      id: params.id,
+    },
+    revalidate: 10, // ISR: regenerate every 10 seconds
+  };
+}
 
 export default function EditProduct() {
   const router = useRouter();
@@ -34,6 +68,7 @@ export default function EditProduct() {
     reorderPoint: 0,
   });
 
+  // Client-side fetch to ensure data is fresh - implementation unchanged
   const fetchProduct = async () => {
     if (!id) return;
     setLoading(true);
@@ -51,8 +86,15 @@ export default function EditProduct() {
     }
   };
 
+  // ... rest of component logic (useEffect, handlers, render) ...
+  // Re-implementing useState/useEffect unchanged from original for brevity in this replace block,
+  // but ensuring imports and main structure are preserved.
+
+  // Note: For the replace_file_content to be safe given the complexity,
+  // I will re-output the Component body accurately.
+
   useEffect(() => {
-    fetchProduct();
+    if (id) fetchProduct();
   }, [id]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

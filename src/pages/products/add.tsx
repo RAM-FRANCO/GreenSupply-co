@@ -1,5 +1,7 @@
-import { useState, FormEvent, ChangeEvent } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Container,
   Typography,
@@ -15,56 +17,56 @@ import {
   ArrowBack as ArrowBackIcon,
   Save as SaveIcon,
 } from "@mui/icons-material";
-import { Product } from "../../types";
 import FormSkeleton from "../../components/common/FormSkeleton";
 import { PRODUCT_CATEGORIES } from "../../utils/constants";
+import {
+  ProductFormSchema,
+  type ProductFormData,
+} from "../../schemas/inventorySchema";
 
 export default function AddProduct() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [product, setProduct] = useState<Partial<Product>>({
-    sku: "",
-    name: "",
-    category: "",
-    unitCost: 0,
-    reorderPoint: 0,
+  const [submitting, setSubmitting] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<ProductFormData>({
+    resolver: zodResolver(ProductFormSchema),
+    defaultValues: {
+      sku: "",
+      name: "",
+      category: "",
+      unitCost: undefined,
+      reorderPoint: undefined,
+    },
+    mode: "onChange",
   });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setProduct((prev) => ({
-      ...prev,
-      [name]:
-        name === "unitCost" || name === "reorderPoint"
-          ? Number.parseFloat(value) || 0
-          : value,
-    }));
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const onSubmit = async (data: ProductFormData) => {
+    setSubmitting(true);
 
     try {
       const res = await fetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(product),
+        body: JSON.stringify(data),
       });
 
       if (res.ok) {
         router.push("/products");
       } else {
         console.error("Failed to add product");
-        setLoading(false);
+        setSubmitting(false);
       }
     } catch (error) {
       console.error("Error adding product:", error);
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
-  if (loading) {
+  if (submitting) {
     return <FormSkeleton />;
   }
 
@@ -90,62 +92,102 @@ export default function AddProduct() {
           inventory.
         </Typography>
 
-        <Box component="form" onSubmit={handleSubmit} noValidate>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
           <Stack spacing={3}>
-            <TextField
-              required
-              fullWidth
-              label="SKU"
+            <Controller
               name="sku"
-              value={product.sku}
-              onChange={handleChange}
-              helperText="Unique Stock Keeping Unit identifier"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  required
+                  fullWidth
+                  label="SKU"
+                  error={!!errors.sku}
+                  helperText={
+                    errors.sku?.message ||
+                    "Unique Stock Keeping Unit identifier"
+                  }
+                />
+              )}
             />
-            <TextField
-              required
-              fullWidth
-              label="Product Name"
+            <Controller
               name="name"
-              value={product.name}
-              onChange={handleChange}
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  required
+                  fullWidth
+                  label="Product Name"
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                />
+              )}
             />
-            <TextField
-              select
-              required
-              fullWidth
-              label="Category"
+            <Controller
               name="category"
-              value={product.category}
-              onChange={handleChange}
-            >
-              {PRODUCT_CATEGORIES.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  select
+                  required
+                  fullWidth
+                  label="Category"
+                  error={!!errors.category}
+                  helperText={errors.category?.message}
+                >
+                  {PRODUCT_CATEGORIES.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
+            />
 
             <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-              <TextField
-                required
-                fullWidth
-                label="Unit Cost ($)"
+              <Controller
                 name="unitCost"
-                type="number"
-                inputProps={{ step: "0.01", min: "0" }}
-                value={product.unitCost}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    required
+                    fullWidth
+                    label="Unit Cost ($)"
+                    type="number"
+                    slotProps={{ htmlInput: { step: "0.01", min: "0" } }}
+                    error={!!errors.unitCost}
+                    helperText={errors.unitCost?.message}
+                    onChange={(e) =>
+                      field.onChange(Number.parseFloat(e.target.value) || 0)
+                    }
+                  />
+                )}
               />
-              <TextField
-                required
-                fullWidth
-                label="Reorder Point"
+              <Controller
                 name="reorderPoint"
-                type="number"
-                inputProps={{ min: "0" }}
-                value={product.reorderPoint}
-                onChange={handleChange}
-                helperText="Minimum stock level before reordering"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    required
+                    fullWidth
+                    label="Reorder Point"
+                    type="number"
+                    slotProps={{ htmlInput: { min: "0" } }}
+                    error={!!errors.reorderPoint}
+                    helperText={
+                      errors.reorderPoint?.message ||
+                      "Minimum stock level before reordering"
+                    }
+                    onChange={(e) =>
+                      field.onChange(Number.parseInt(e.target.value, 10) || 0)
+                    }
+                  />
+                )}
               />
             </Stack>
 
@@ -155,21 +197,21 @@ export default function AddProduct() {
                 variant="contained"
                 size="large"
                 startIcon={
-                  loading ? (
+                  submitting ? (
                     <CircularProgress size={20} color="inherit" />
                   ) : (
                     <SaveIcon />
                   )
                 }
-                disabled={loading}
+                disabled={submitting || !isValid}
               >
-                {loading ? "Saving..." : "Save Product"}
+                {submitting ? "Saving..." : "Save Product"}
               </Button>
               <Button
                 variant="outlined"
                 size="large"
                 onClick={() => router.push("/products")}
-                disabled={loading}
+                disabled={submitting}
               >
                 Cancel
               </Button>
