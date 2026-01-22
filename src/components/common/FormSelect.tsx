@@ -9,6 +9,7 @@ import {
   MenuItem,
   FormHelperText,
 } from "@mui/material";
+import type { SxProps, Theme } from "@mui/material";
 
 interface SelectOption {
   readonly id: number | string;
@@ -17,13 +18,15 @@ interface SelectOption {
 
 interface FormSelectProps {
   readonly label: string;
-  readonly value: number | string;
+  readonly value: number | string | undefined;
   readonly options: readonly SelectOption[];
   readonly onChange: (value: number | string) => void;
   readonly disabled?: boolean;
   readonly error?: string;
   readonly required?: boolean;
   readonly fullWidth?: boolean;
+  readonly size?: "small" | "medium";
+  readonly sx?: SxProps<Theme>;
 }
 
 /**
@@ -38,6 +41,8 @@ export default function FormSelect({
   error,
   required = false,
   fullWidth = true,
+  size = "medium",
+  sx = {},
 }: FormSelectProps) {
   const labelId = `${label.toLowerCase().replaceAll(/\s+/g, "-")}-label`;
 
@@ -47,13 +52,25 @@ export default function FormSelect({
       error={Boolean(error)}
       disabled={disabled}
       required={required}
+      size={size}
+      sx={sx}
     >
       <InputLabel id={labelId}>{label}</InputLabel>
       <Select
         labelId={labelId}
-        value={value}
+        value={value ?? ""}
         label={label}
         onChange={(e) => onChange(e.target.value)}
+        MenuProps={{ disableScrollLock: true }}
+        sx={{
+          borderRadius: 3, // Premium rounded look
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "divider",
+          },
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: "primary.main",
+          },
+        }}
       >
         {options.map((option) => (
           <MenuItem key={option.id} value={option.id}>
