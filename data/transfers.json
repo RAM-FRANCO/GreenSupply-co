@@ -1,0 +1,106 @@
+[
+  {
+    "id": 1,
+    "referenceNumber": "TRF-20260121-0001",
+    "productId": 1,
+    "fromWarehouseId": 1,
+    "toWarehouseId": 2,
+    "quantity": 10,
+    "status": "completed",
+    "createdAt": "2026-01-21T20:05:16.330Z",
+    "completedAt": "2026-01-21T20:05:16.330Z",
+    "notes": "Test Optimization"
+  },
+  {
+    "id": 2,
+    "referenceNumber": "TRF-20260122-0002",
+    "productId": 2,
+    "fromWarehouseId": 1,
+    "toWarehouseId": 3,
+    "quantity": 500,
+    "status": "pending",
+    "createdAt": "2026-01-22T02:00:00.000Z",
+    "completedAt": null,
+    "notes": "Initial Stock"
+  },
+  {
+    "id": 3,
+    "referenceNumber": "TRF-20260122-0003",
+    "productId": 5,
+    "fromWarehouseId": 3,
+    "toWarehouseId": 2,
+    "quantity": 250,
+    "status": "in_transit",
+    "createdAt": "2026-01-22T04:30:00.000Z",
+    "completedAt": null,
+    "notes": "Urgent Request"
+  },
+  {
+    "id": 4,
+    "referenceNumber": "TRF-20260122-0004",
+    "productId": 3,
+    "fromWarehouseId": 2,
+    "toWarehouseId": 1,
+    "quantity": 1000,
+    "status": "completed",
+    "createdAt": "2026-01-21T18:00:00.000Z",
+    "completedAt": "2026-01-22T01:00:00.000Z",
+    "notes": "Restock Main"
+  },
+  {
+    "id": 5,
+    "referenceNumber": "TRF-20260122-0005",
+    "productId": 4,
+    "fromWarehouseId": 1,
+    "toWarehouseId": 3,
+    "quantity": 75,
+    "status": "completed",
+    "createdAt": "2026-01-20T10:00:00.000Z",
+    "completedAt": "2026-01-20T14:30:00.000Z",
+    "notes": "Sample Request"
+  },
+  {
+    "id": 6,
+    "referenceNumber": "TRF-20260122-0006",
+    "productId": 2,
+    "fromWarehouseId": 1,
+    "toWarehouseId": 2,
+    "quantity": 200,
+    "status": "completed",
+    "createdAt": "2026-01-22T08:14:03.433Z",
+    "completedAt": "2026-01-22T08:14:03.433Z"
+  },
+  {
+    "id": 7,
+    "referenceNumber": "TRF-20260122-0007",
+    "productId": 3,
+    "fromWarehouseId": 2,
+    "toWarehouseId": 1,
+    "quantity": 200,
+    "status": "completed",
+    "createdAt": "2026-01-22T08:14:26.813Z",
+    "completedAt": "2026-01-22T08:14:26.813Z"
+  },
+  {
+    "id": 8,
+    "referenceNumber": "TRF-20260122-0008",
+    "productId": 7,
+    "fromWarehouseId": 1,
+    "toWarehouseId": 3,
+    "quantity": 40,
+    "status": "completed",
+    "createdAt": "2026-01-22T11:34:56.510Z",
+    "completedAt": "2026-01-22T11:34:56.510Z"
+  },
+  {
+    "id": 9,
+    "referenceNumber": "TRF-20260122-0009",
+    "productId": 2,
+    "fromWarehouseId": 1,
+    "toWarehouseId": 3,
+    "quantity": 20,
+    "status": "completed",
+    "createdAt": "2026-01-22T12:07:45.586Z",
+    "completedAt": "2026-01-22T12:07:45.586Z"
+  }
+]

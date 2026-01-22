@@ -4,8 +4,10 @@
     "sku": "ECO-UTN-001",
     "name": "Bamboo Spork Set",
     "category": "Utensils",
-    "unitCost": 2.50,
-    "reorderPoint": 100
+    "unitCost": 3.5,
+    "reorderPoint": 105,
+    "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuC30exHBEg_eOLPsVyFgnLKC083QNKwAn3GqPlO0X3Uw5pHM0BHeRpMApJwLl7WS4tB7kcITDc9rJUO12xuC2pmUFKRlOR7ZyYLsNTscsyVNgMi56kCjy4np46d2VyGGcKTiQuY_WoCyj84Y7HzsYYCd2EXMp0Q5Vj4zqMudbt1g6yezNSrmxMGy_uwKXkTDwtB9mQ6VTwQXq3I4eorUCon-B5tjyNBtZ6ZMFLbwbkxxdhcnUnX8Mx-cRlqdoKD_zSTNYsFvDPS4kMb",
+    "supplier": "EcoServe Ltd."
   },
   {
     "id": 2,
@@ -13,15 +15,19 @@
     "name": "Compostable Food Container 32oz",
     "category": "Packaging",
     "unitCost": 0.85,
-    "reorderPoint": 500
+    "reorderPoint": 500,
+    "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuC_vqSSi83A_ItRBhwu9A3jR19U2YEr79YwT6nbXABmqHjovpMCS5rzyLfPB6ErrB0jjvd70TDzVLot3PL2Egl9FR5YH0bu9ctKufjTPfS0oWBu3dABZdwZ-XGmzcOAXQO05XEa6Vo_2xJOO8QLBKa8qPyD2qYUYprvQRJF20N1PYH1fuK-dE3UsengBzpk_oSb58xE8QqzDTWGlJCGuGQg_KFvB0jU5zm_3zSFMjxciMLQvfHRyxEHu07VUC-BJ9Lwhk1jZtXA-9oc",
+    "supplier": "GreenPack Co."
   },
   {
     "id": 3,
     "sku": "ECO-UTN-003",
     "name": "Wooden Chopsticks",
     "category": "Utensils",
-    "unitCost": 0.30,
-    "reorderPoint": 1000
+    "unitCost": 0.3,
+    "reorderPoint": 1000,
+    "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuC5OAVBajcCWeyAXK-sowtJ7RTvfJ1kN8rMUr59DU8vVLMEHvLf6RVHJZKDEw0bYX6HklRCZIsP9NED9lhyq01Eo6WdRz82eSdEc-_5pKq1pkpwqah34hle3RTH3Tvj7-tcDgT0SQlvTe1DQRaf5onPRYpvZ_7s6tFtx37VTJyRX0lp0kUH7kIIk5nX7HfDVklVW6cjDN0-gVc7Xz6t8GcI0LdYDc6Zl0jNKd2ToJc9HwYo0mmF3L0IoYAYRzKlPyXa4gcronfIQEIP",
+    "supplier": "BioMaterials Inc."
   },
   {
     "id": 4,
@@ -29,15 +35,52 @@
     "name": "Recyclable Paper Bowl",
     "category": "Packaging",
     "unitCost": 0.45,
-    "reorderPoint": 750
+    "reorderPoint": 750,
+    "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuBFqIdTFaWaNAEB7PM3NdX6umk2q9XRGoyC6k9pusAPngAJWVFS8CxzRld84XrljKV1W8sKPYhb14z4TaEAtWkr5ssFMmpbGKk4d4QIYnqrqUQRO93rrtLwF3qzVSK6PbnbhTys9CMSyB7kVdvwu_QzonJyc6ZxNusMSiKEg0FEyh2QhePdAC5NNnoZuYogPdo7tEQZoMasBzXdEzGLXDhtEFfWUAkL-D2frA6K4S0wcl99J6I0HF1iHP9Qcnu7_Zi5-pMZHU2pLNp_",
+    "supplier": "GreenPack Co."
   },
   {
     "id": 5,
     "sku": "ECO-CUP-005",
     "name": "Biodegradable Coffee Cup 12oz",
     "category": "Cups",
-    "unitCost": 0.60,
-    "reorderPoint": 600
+    "unitCost": 0.6,
+    "reorderPoint": 600,
+    "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDtb5FYtYt6Hkb7WI6OblgaOXEFbdkPnWcwMzRro0xKufwHG0A0PFe939iPR07yjPFYAbZuA9liT0Jf9igQ3qOTjUXIQEqbw17lycs2XLUz8sZCNS3tehArPdup8BGXn_CmehgMVb1zekavJr8A1nrRPXzB302CKfC9fZmq65TRrzT9UAgre2LNsi7D32pHTNhxdKOn6caH8PUeaxP28RsrnIARpu_oBvaSPc0mcaAH7DPr3OupIxvAwfo8zkAlWuYrp8wDE3pZNrI8",
+    "supplier": "EcoServe Ltd."
+  },
+  {
+    "id": 6,
+    "sku": "ECO-BAG-006",
+    "name": "Kraft Paper Bag Large",
+    "category": "Bags",
+    "unitCost": 0.3,
+    "reorderPoint": 800,
+    "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuAmVmtCuXNEZVOFpTkfFlkj0_CwqiHXeRPEmctUqAfZP8y1WRV3R3RbOIWKyH5XDNqpUtF5Jh75SRWkJytiGZxAP_4nrRQwAeTJh9_PYaQPDCSFQBgBsmlxzwyf2ZuqoGsD22eHAsp8GMcshTWJzPK_X4Ur5oDVm46GXvtsYXz8wxWJ44yQLQ-YfXEww7kQk2IB6RcL-O8goM0XfQjDv4L0Abr3q6didOzwuejBqQyffkjhcVApuYeIzh8NE1SZcOT-eNI458p8Dfv9",
+    "supplier": "BioMaterials Inc."
+  },
+  {
+    "sku": "ECO-UTN-001",
+    "name": "Test Product",
+    "category": "Packaging",
+    "unitCost": 2,
+    "reorderPoint": 0,
+    "id": 7
+  },
+  {
+    "sku": "test",
+    "name": "Test Org",
+    "category": "Utensils",
+    "unitCost": 0,
+    "reorderPoint": 0,
+    "id": 8
+  },
+  {
+    "sku": "test",
+    "name": "test",
+    "category": "Packaging",
+    "unitCost": 2,
+    "reorderPoint": 22,
+    "id": 9
   }
 ]
-
