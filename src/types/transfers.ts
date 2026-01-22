@@ -1,4 +1,5 @@
 import type { Product, Warehouse } from './inventory';
+import type { SelectOption } from './common';
 
 // ============================================================================
 // Transfer Types
@@ -6,6 +7,19 @@ import type { Product, Warehouse } from './inventory';
 
 /** Transfer status enum */
 export type TransferStatus = 'completed' | 'pending' | 'cancelled';
+
+// ============================================================================
+// Form Types
+// ============================================================================
+
+/** Inventory data for step item selection */
+export interface InventoryData {
+  readonly from: Warehouse | undefined;
+  readonly to: Warehouse | undefined;
+  readonly availableStock: number | null;
+  readonly stockPercentage: number;
+  readonly productOptions: readonly SelectOption[];
+}
 
 /** Transfer record - stored in transfers.json */
 export interface Transfer {
@@ -98,4 +112,27 @@ export interface PaginatedResponse<T> {
 export interface ApiError {
   readonly message: string;
   readonly code?: string;
+}
+
+// ============================================================================
+// Activity Timeline Types
+// ============================================================================
+
+/** Activity event type for timeline display */
+export type ActivityEventType = 'dispatched' | 'completed' | 'created' | 'pending';
+
+/** Activity event for recent activity timeline */
+export interface ActivityEvent {
+  readonly id: number;
+  readonly type: ActivityEventType;
+  readonly referenceNumber: string;
+  readonly description: string;
+  readonly timestamp: string;
+}
+
+/** Filter state for transfer history */
+export interface TransferFilters {
+  readonly status?: TransferStatus;
+  readonly dateRange?: { readonly start: string; readonly end: string };
+  readonly warehouseId?: number;
 }
