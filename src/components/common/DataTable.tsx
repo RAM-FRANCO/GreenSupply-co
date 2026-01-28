@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
   getPaginationRowModel,
+  getExpandedRowModel,
   flexRender,
   SortingState,
+  ExpandedState,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -20,8 +22,14 @@ import {
   Box,
   Typography,
   Skeleton,
+  IconButton,
+  Collapse,
 } from "@mui/material";
-import { Inventory2 as EmptyIcon } from "@mui/icons-material";
+import {
+  Inventory2 as EmptyIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  KeyboardArrowUp as KeyboardArrowUpIcon,
+} from "@mui/icons-material";
 import type { DataTableProps } from "../../types/table.types";
 
 /** Approximate height of a table row in pixels for layout stability */
@@ -29,34 +37,77 @@ const ROW_HEIGHT_PX = 73;
 
 /**
  * Reusable DataTable component powered by TanStack Table.
- * Provides consistent styling, sorting, and pagination across the app.
+ * Provides consistent styling, sorting, pagination, and expandable rows.
  */
 export default function DataTable<T extends object>({
   data,
   columns,
   title,
   headerActions,
+  rowCount,
   enableSorting = true,
   enablePagination = true,
   pageSize = 10,
   isLoading = false,
   emptyMessage = "No data found",
+  emptyState,
+  renderSubComponent,
+  getRowCanExpand,
+  // Props are now fully typed in DataTableProps<T>
+  onRowClick,
+  pageCount,
+  paginationState,
+  onPaginationChange,
+  sx,
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [expanded, setExpanded] = useState<ExpandedState>({});
+  
+  // Internal state fallback if not controlled
+  const [internalPagination, setInternalPagination] = useState({
+    pageIndex: 0,
+    pageSize,
+  });
+
+  const pagination = paginationState ?? internalPagination;
 
   const table = useReactTable({
     data,
     columns,
-    state: { sorting },
+    pageCount: pageCount ?? -1, // -1 means unknown/client-side, usually
+    state: { 
+        sorting, 
+        expanded,
+        pagination 
+    },
     onSortingChange: setSorting,
+    onExpandedChange: setExpanded,
+    onPaginationChange: (updater) => {
+        if (typeof updater === 'function') {
+            const newState = updater(pagination);
+            if (onPaginationChange) {
+                onPaginationChange(newState);
+            } else {
+                setInternalPagination(newState);
+            }
+        } else {
+             if (onPaginationChange) {
+                onPaginationChange(updater);
+            } else {
+                setInternalPagination(updater);
+            }
+        }
+    },
+    manualPagination: !!pageCount, // Enable manual if pageCount provided
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: enableSorting ? getSortedRowModel() : undefined,
     getPaginationRowModel: enablePagination
-      ? getPaginationRowModel()
+      ? getPaginationRowModel() // This still needed? Yes, if manual=false
       : undefined,
-    initialState: {
-      pagination: { pageSize },
-    },
+    getExpandedRowModel: getExpandedRowModel(),
+    getRowCanExpand: getRowCanExpand
+      ? (row) => getRowCanExpand(row.original)
+      : undefined,
   });
 
   const { pageIndex } = table.getState().pagination;
@@ -72,10 +123,15 @@ export default function DataTable<T extends object>({
             <Skeleton variant="text" width={200} height={32} />
           </Box>
         )}
-        <TableContainer>
-          <Table>
+        <TableContainer sx={{ minHeight: ROW_HEIGHT_PX * 6 }}>
+          <Table sx={{ minWidth: 650 }}>
             <TableHead sx={{ bgcolor: "action.hover" }}>
               <TableRow>
+                {renderSubComponent && (
+                  <TableCell sx={{ width: 48 }}>
+                    <Skeleton variant="circular" width={24} height={24} />
+                  </TableCell>
+                )}
                 {columns.map((_, i) => (
                   <TableCell key={`header-skeleton-${i}`}>
                     <Skeleton variant="text" width={100} />
@@ -86,6 +142,11 @@ export default function DataTable<T extends object>({
             <TableBody>
               {Array.from({ length: 5 }).map((_, rowIdx) => (
                 <TableRow key={`row-skeleton-${rowIdx}`}>
+                  {renderSubComponent && (
+                    <TableCell>
+                      <Skeleton variant="circular" width={24} height={24} />
+                    </TableCell>
+                  )}
                   {columns.map((_, colIdx) => (
                     <TableCell key={`cell-skeleton-${rowIdx}-${colIdx}`}>
                       <Skeleton variant="text" />
@@ -103,7 +164,7 @@ export default function DataTable<T extends object>({
   return (
     <Paper
       elevation={0}
-      sx={{ border: 1, borderColor: "divider", borderRadius: 2 }}
+      sx={{ border: 1, borderColor: "divider", borderRadius: 2, ...sx }}
     >
       {/* Header */}
       {(title || headerActions) && (
@@ -127,11 +188,14 @@ export default function DataTable<T extends object>({
       )}
 
       {/* Table */}
-      <TableContainer sx={{ overflowX: "auto" }}>
+      <TableContainer sx={{ overflowX: "auto", minHeight: ROW_HEIGHT_PX * 6 }}>
         <Table sx={{ minWidth: 650 }}>
           <TableHead sx={{ bgcolor: "action.hover" }}>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
+                {/* Expander Column Header */}
+                {renderSubComponent && <TableCell sx={{ width: 48 }} />}
+                
                 {headerGroup.headers.map((header) => {
                   const meta = header.column.columnDef.meta as
                     | { align?: string }
@@ -182,39 +246,86 @@ export default function DataTable<T extends object>({
             {table.getRowModel().rows.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={columns.length + (renderSubComponent ? 1 : 0)}
                   align="center"
                   sx={{ py: 6 }}
                 >
-                  <EmptyIcon
-                    sx={{ fontSize: 48, color: "text.disabled", mb: 2 }}
-                  />
-                  <Typography variant="h6" color="text.secondary">
-                    {emptyMessage}
-                  </Typography>
+                  {emptyState ? (
+                    emptyState
+                  ) : (
+                    <>
+                      <EmptyIcon
+                        sx={{ fontSize: 48, color: "text.disabled", mb: 2 }}
+                      />
+                      <Typography variant="h6" color="text.secondary">
+                        {emptyMessage}
+                      </Typography>
+                    </>
+                  )}
                 </TableCell>
               </TableRow>
             ) : (
               <>
                 {table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} hover>
-                    {row.getVisibleCells().map((cell) => {
-                      const meta = cell.column.columnDef.meta as
-                        | { align?: string }
-                        | undefined;
-                      const align =
-                        (meta?.align as "left" | "center" | "right") || "left";
-
-                      return (
-                        <TableCell key={cell.id} align={align}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
+                  <Fragment key={row.id}>
+                    <TableRow
+                      hover
+                      onClick={() => onRowClick?.(row.original)}
+                      sx={{
+                        cursor: onRowClick ? "pointer" : "default",
+                      }}
+                    >
+                      {/* Expander Cell */}
+                      {renderSubComponent && (
+                        <TableCell>
+                          {row.getCanExpand() && (
+                            <IconButton
+                              aria-label="expand row"
+                              size="small"
+                              onClick={row.getToggleExpandedHandler()}
+                            >
+                              {row.getIsExpanded() ? (
+                                <KeyboardArrowUpIcon />
+                              ) : (
+                                <KeyboardArrowDownIcon />
+                              )}
+                            </IconButton>
                           )}
                         </TableCell>
-                      );
-                    })}
-                  </TableRow>
+                      )}
+                      
+                      {row.getVisibleCells().map((cell) => {
+                        const meta = cell.column.columnDef.meta as
+                          | { align?: string }
+                          | undefined;
+                        const align =
+                          (meta?.align as "left" | "center" | "right") || "left";
+
+                        return (
+                          <TableCell key={cell.id} align={align}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                    
+                    {/* Expanded Content */}
+                    {row.getIsExpanded() && renderSubComponent && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columns.length + 1}
+                          sx={{ pb: 0, pt: 0, borderBottom: 0 }}
+                        >
+                          <Collapse in={row.getIsExpanded()} timeout="auto" unmountOnExit>
+                             {renderSubComponent({ row: row.original })}
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </Fragment>
                 ))}
                 {/* Avoid layout jump when on the last page with empty rows */}
                 {enablePagination &&
@@ -229,7 +340,7 @@ export default function DataTable<T extends object>({
                             table.getRowModel().rows.length),
                       }}
                     >
-                      <TableCell colSpan={columns.length} />
+                      <TableCell colSpan={columns.length + (renderSubComponent ? 1 : 0)} />
                     </TableRow>
                   )}
               </>
@@ -242,7 +353,19 @@ export default function DataTable<T extends object>({
       {enablePagination && data.length > 0 && (
         <TablePagination
           component="div"
-          count={data.length}
+          count={rowCount ?? (pageCount ? pageCount * table.getState().pagination.pageSize : data.length)}
+          // TanStack stores pageCount (number of pages). MUI TablePagination needs total item count.
+          // Props should probably include `totalRows` if manual.
+          // Let's check props.
+          // I didn't add totalRows to props in previous step.
+          // For manual pagination, we generally know 'total'.
+          // Let's assume pageCount * pageSize for now or update props to include `rowCount`.
+          // Better: Update props to accept `rowCount`.
+          
+          // Re-reading previous step... I added `pageCount`.
+          // Let's add `rowCount` to props in next step or use what we have.
+          // If manualPagination is true, `table.getPrePaginationRowModel().rows.length` is just the current page rows.
+          // I need to accept `rowCount` prop.
           page={pageIndex}
           rowsPerPage={table.getState().pagination.pageSize}
           rowsPerPageOptions={[10, 25, 50]}

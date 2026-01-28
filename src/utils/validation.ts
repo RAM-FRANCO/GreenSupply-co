@@ -7,6 +7,6 @@ import { KeyboardEvent } from "react";
  * @param event The React KeyboardEvent
  * @returns true if the key should be blocked, false otherwise
  */
-export const isIntegerKey = (event: KeyboardEvent<any>): boolean => {
+export const isIntegerKey = (event: KeyboardEvent<HTMLElement>): boolean => {
   return ["e", "E", ".", "-", "+"].includes(event.key);
 };
