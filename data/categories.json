@@ -1,0 +1,50 @@
+[
+  {
+    "id": "utensils",
+    "name": "Utensils",
+    "icon": "restaurant",
+    "color": "green"
+  },
+  {
+    "id": "packaging",
+    "name": "Packaging",
+    "icon": "inventory_2",
+    "color": "blue"
+  },
+  {
+    "id": "cups",
+    "name": "Cups",
+    "icon": "local_cafe",
+    "color": "orange"
+  },
+  {
+    "id": "bowls",
+    "name": "Bowls",
+    "icon": "rice_bowl",
+    "color": "teal"
+  },
+  {
+    "id": "bags",
+    "name": "Bags",
+    "icon": "shopping_bag",
+    "color": "amber"
+  },
+  {
+    "id": "plates",
+    "name": "Plates",
+    "icon": "dinner_dining",
+    "color": "indigo"
+  },
+  {
+    "id": "straws",
+    "name": "Straws",
+    "icon": "local_drink",
+    "color": "yellow"
+  },
+  {
+    "id": "napkins",
+    "name": "Napkins",
+    "icon": "layers",
+    "color": "gray"
+  }
+]
