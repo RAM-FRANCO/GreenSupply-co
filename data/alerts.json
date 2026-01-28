@@ -1,0 +1,64 @@
+[
+  {
+    "id": 1,
+    "productId": 2,
+    "warehouseId": 1,
+    "status": "resolved",
+    "createdAt": "2026-01-22T14:43:55.456Z",
+    "updatedAt": "2026-01-28T00:17:32.377Z",
+    "acknowledgedAt": "2026-01-28T00:03:41.299Z",
+    "notes": "System: Alert triggered by Transfer Out TRF-20260122-0011 (-504)\nSystem: Received PO #2 (+1000 units)",
+    "resolvedAt": "2026-01-28T00:17:32.377Z"
+  },
+  {
+    "id": 2,
+    "productId": 5,
+    "warehouseId": 2,
+    "status": "resolved",
+    "createdAt": "2026-01-22T15:00:26.716Z",
+    "updatedAt": "2026-01-22T15:29:41.013Z",
+    "acknowledgedAt": "2026-01-22T15:00:26.716Z",
+    "resolvedAt": "2026-01-22T15:29:41.013Z",
+    "notes": "System: Reordered +750 units"
+  },
+  {
+    "id": 3,
+    "productId": 2,
+    "warehouseId": 2,
+    "status": "acknowledged",
+    "createdAt": "2026-01-22T15:43:49.130Z",
+    "updatedAt": "2026-01-22T15:43:49.130Z",
+    "acknowledgedAt": "2026-01-22T15:43:49.130Z"
+  },
+  {
+    "id": 4,
+    "productId": 5,
+    "warehouseId": 3,
+    "status": "acknowledged",
+    "createdAt": "2026-01-22T15:44:04.114Z",
+    "updatedAt": "2026-01-22T15:44:04.114Z",
+    "acknowledgedAt": "2026-01-22T15:44:04.114Z"
+  },
+  {
+    "id": 5,
+    "productId": 1,
+    "warehouseId": 1,
+    "status": "resolved",
+    "createdAt": "2026-01-22T16:10:33.429Z",
+    "updatedAt": "2026-01-28T00:17:52.943Z",
+    "acknowledgedAt": "2026-01-28T00:03:35.419Z",
+    "notes": "System: Alert triggered by Transfer Out TRF-20260122-0012 (-10)\nSystem: Received PO #3 (+210 units)\nSystem: Received PO #4 (+210 units)",
+    "resolvedAt": "2026-01-28T00:17:52.943Z"
+  },
+  {
+    "id": 6,
+    "productId": 4,
+    "warehouseId": 1,
+    "status": "resolved",
+    "createdAt": "2026-01-22T17:43:09.103Z",
+    "updatedAt": "2026-01-28T00:15:21.063Z",
+    "notes": "System: Alert triggered by Transfer Out TRF-20260122-0013 (-950)\nSystem: Received PO #1 (+1500 units)",
+    "acknowledgedAt": "2026-01-28T00:03:28.326Z",
+    "resolvedAt": "2026-01-28T00:15:21.063Z"
+  }
+]
