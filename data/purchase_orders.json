@@ -1,0 +1,83 @@
+[
+  {
+    "id": 1,
+    "productId": 4,
+    "warehouseId": 1,
+    "quantity": 1500,
+    "status": "received",
+    "orderDate": "2026-01-28T00:12:47.353Z",
+    "receivedDate": "2026-01-28T00:15:21.062Z"
+  },
+  {
+    "id": 2,
+    "productId": 2,
+    "warehouseId": 1,
+    "quantity": 1000,
+    "status": "received",
+    "orderDate": "2026-01-28T00:17:27.633Z",
+    "receivedDate": "2026-01-28T00:17:32.377Z"
+  },
+  {
+    "id": 3,
+    "productId": 1,
+    "warehouseId": 1,
+    "quantity": 210,
+    "status": "received",
+    "orderDate": "2026-01-28T00:17:36.885Z",
+    "receivedDate": "2026-01-28T00:17:51.386Z"
+  },
+  {
+    "id": 4,
+    "productId": 1,
+    "warehouseId": 1,
+    "quantity": 210,
+    "status": "received",
+    "orderDate": "2026-01-28T00:17:40.938Z",
+    "receivedDate": "2026-01-28T00:17:52.942Z"
+  },
+  {
+    "id": 5,
+    "productId": 6,
+    "warehouseId": 1,
+    "quantity": 200,
+    "status": "received",
+    "orderDate": "2026-01-28T00:36:35.590Z",
+    "receivedDate": "2026-01-28T00:59:50.013Z"
+  },
+  {
+    "id": 6,
+    "productId": 7,
+    "warehouseId": 2,
+    "quantity": 5900,
+    "status": "received",
+    "orderDate": "2026-01-28T00:58:38.690Z",
+    "receivedDate": "2026-01-28T00:59:50.015Z"
+  },
+  {
+    "id": 7,
+    "productId": 8,
+    "warehouseId": 1,
+    "quantity": 58,
+    "status": "received",
+    "orderDate": "2026-01-28T00:59:33.951Z",
+    "receivedDate": "2026-01-28T01:01:06.408Z"
+  },
+  {
+    "id": 8,
+    "productId": 8,
+    "warehouseId": 1,
+    "quantity": 23,
+    "status": "received",
+    "orderDate": "2026-01-28T01:01:24.818Z",
+    "receivedDate": "2026-01-28T01:01:35.240Z"
+  },
+  {
+    "id": 9,
+    "productId": 8,
+    "warehouseId": 2,
+    "quantity": 20,
+    "status": "received",
+    "orderDate": "2026-01-28T01:12:51.483Z",
+    "receivedDate": "2026-01-28T01:13:07.350Z"
+  }
+]

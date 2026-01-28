@@ -2,16 +2,19 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { CircularProgress, Box } from "@mui/material";
 
-export default function AddWarehouseRedirect() {
+export default function EditWarehouseRedirect() {
   const router = useRouter();
+  const { id } = router.query;
 
   useEffect(() => {
-    // Redirect to the warehouses list with the add action query param
-    router.replace({
-      pathname: "/warehouses",
-      query: { action: "add" },
-    });
-  }, [router]);
+    if (id) {
+      // Redirect to the warehouses list with the edit action query param
+      router.replace({
+        pathname: "/warehouses",
+        query: { action: "edit", id },
+      });
+    }
+  }, [id, router]);
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
@@ -19,3 +22,4 @@ export default function AddWarehouseRedirect() {
     </Box>
   );
 }
+
