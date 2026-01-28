@@ -5,12 +5,9 @@ import {
   StepLabel,
   Paper,
   Typography,
-  Button,
   useTheme,
   alpha,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { useRouter } from "next/router";
 
 interface TransferWizardProps {
   readonly activeStep: number;
@@ -27,7 +24,7 @@ export default function TransferWizard({
   title,
   transparentContent = false,
 }: TransferWizardProps) {
-  const router = useRouter();
+
   const theme = useTheme();
 
   return (

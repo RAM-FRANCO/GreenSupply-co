@@ -1,8 +1,12 @@
 import { useMemo } from "react";
-import { createColumnHelper, ColumnDef } from "@tanstack/react-table";
-import { Chip, Typography, Box } from "@mui/material";
-import type { InventoryItem } from "../../types/inventory";
-import { customPalette } from "../../theme/theme";
+import { createColumnHelper } from "@tanstack/react-table";
+import { Typography, Box } from "@mui/material";
+import type { InventoryItem } from "@/types/inventory";
+import {
+  ProductCell,
+  CategoryCell,
+} from "@/components/common/TableCells";
+import StatusChip from "@/components/common/StatusChip";
 
 const columnHelper = createColumnHelper<InventoryItem>();
 
@@ -16,32 +20,25 @@ interface UseInventoryColumnsOptions {
  */
 export const useInventoryColumns = ({
   onEdit,
-}: UseInventoryColumnsOptions): ColumnDef<InventoryItem, any>[] => {
+}: UseInventoryColumnsOptions) => {
   return useMemo(
     () => [
       columnHelper.accessor("sku", {
-        header: "SKU",
+        header: "Product",
         cell: (info) => (
-          <Typography variant="body2" fontWeight={500}>
-            {info.getValue()}
-          </Typography>
+          <ProductCell name={info.row.original.name} sku={info.getValue()} />
         ),
       }),
-      columnHelper.accessor("name", {
-        header: "Product Name",
-        cell: (info) => (
-          <Typography variant="body2" color="text.secondary">
-            {info.getValue()}
-          </Typography>
-        ),
-      }),
+      // Previously name was separate, now merged into ProductCell above.
+      // We can remove the separate Name column or keep it if SKU is separate.
+      // The design shows Product (Name + SKU) as one column in Stock Page.
+      // The Dashboard had SKU and Name separate.
+      // Let's stick to the new standardized "Product" column which combines them.
+      // Removing the separate Name column for consistency.
+
       columnHelper.accessor("category", {
         header: "Category",
-        cell: (info) => (
-          <Typography variant="body2" color="text.secondary">
-            {info.getValue()}
-          </Typography>
-        ),
+        cell: (info) => <CategoryCell category={info.getValue()} />,
       }),
       columnHelper.accessor("totalQuantity", {
         header: "Total Stock",
@@ -72,26 +69,12 @@ export const useInventoryColumns = ({
         id: "status",
         header: "Status",
         enableSorting: false,
-        cell: ({ row }) => {
-          const isLow = row.original.isLowStock;
-          return (
-            <Chip
-              label={isLow ? "Low Stock" : "In Stock"}
-              size="small"
-              sx={{
-                fontWeight: 500,
-                bgcolor: isLow
-                  ? customPalette.status.lowStock.bg
-                  : customPalette.status.inStock.bg,
-                color: isLow
-                  ? customPalette.status.lowStock.text
-                  : customPalette.status.inStock.text,
-                borderRadius: "16px",
-                height: "22px",
-              }}
-            />
-          );
-        },
+        cell: ({ row }) => (
+          <StatusChip
+            quantity={row.original.totalQuantity}
+            reorderPoint={row.original.reorderPoint}
+          />
+        ),
       }),
       columnHelper.display({
         id: "actions",

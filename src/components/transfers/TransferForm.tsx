@@ -61,11 +61,7 @@ export default function TransferForm({
         </Alert>
       )}
 
-      {success && (
-        <Alert severity="success" sx={{ mb: 3 }} onClose={clearSuccess}>
-          {success}
-        </Alert>
-      )}
+
 
       {/* Step 1: Route Selection */}
       {activeStep === 0 && (

@@ -18,6 +18,9 @@ import {
   generateReferenceNumber,
   getCurrentTimestamp,
 } from './dataService';
+import { getStockStatus } from '@/utils/stockUtils';
+import { updateAlertStatus } from './alertService';
+import { stockMutex } from './mutex';
 
 // File names
 const TRANSFERS_FILE = 'transfers.json';
@@ -47,7 +50,12 @@ export class ValidationError extends Error {
 /**
  * Validate transfer request - throws ValidationError on invalid input
  */
-export const validateTransfer = (req: CreateTransferRequest): void => {
+export const validateTransfer = (
+  req: CreateTransferRequest,
+  // Optional pre-loaded data to avoid redundant I/O
+  existingProducts?: Product[],
+  existingWarehouses?: Warehouse[]
+): void => {
   const { productId, fromWarehouseId, toWarehouseId, quantity } = req;
 
   // Required fields
@@ -75,7 +83,7 @@ export const validateTransfer = (req: CreateTransferRequest): void => {
   }
 
   // Verify product exists
-  const products = readJsonFile<Product>(PRODUCTS_FILE);
+  const products = existingProducts ?? readJsonFile<Product>(PRODUCTS_FILE);
   const product = products.find((p) => p.id === productId);
   if (!product) {
     throw new ValidationError(
@@ -86,7 +94,7 @@ export const validateTransfer = (req: CreateTransferRequest): void => {
   }
 
   // Verify warehouses exist
-  const warehouses = readJsonFile<Warehouse>(WAREHOUSES_FILE);
+  const warehouses = existingWarehouses ?? readJsonFile<Warehouse>(WAREHOUSES_FILE);
   const fromWarehouse = warehouses.find((w) => w.id === fromWarehouseId);
   if (!fromWarehouse) {
     throw new ValidationError(
@@ -127,111 +135,141 @@ export const validateTransfer = (req: CreateTransferRequest): void => {
  * Execute a stock transfer between warehouses.
  * Creates audit entries and updates stock levels atomically.
  */
-export const executeTransfer = (req: CreateTransferRequest): Transfer => {
-  const { productId, fromWarehouseId, toWarehouseId, quantity, notes } = req;
+export const executeTransfer = async (req: CreateTransferRequest): Promise<Transfer> => {
+  return stockMutex.runExclusive(() => {
+    const { productId, fromWarehouseId, toWarehouseId, quantity, notes } = req;
 
-  // Validate first
-  validateTransfer(req);
+    // Optimization: Read reference data ONCE before validation
+    const products = readJsonFile<Product>(PRODUCTS_FILE);
+    const warehouses = readJsonFile<Warehouse>(WAREHOUSES_FILE);
 
-  // Read current data
-  const transfers = readJsonFile<Transfer>(TRANSFERS_FILE);
-  const stock = readJsonFile<Stock>(STOCK_FILE);
+    // Validate using pre-loaded data
+    validateTransfer(req, products, warehouses);
 
-  // Generate reference number
-  const referenceNumber = generateReferenceNumber('TRF', transfers);
-  const timestamp = getCurrentTimestamp();
+    // Read current data
+    const transfers = readJsonFile<Transfer>(TRANSFERS_FILE);
+    const stock = readJsonFile<Stock>(STOCK_FILE);
 
-  // Update source stock (decrease)
-  const sourceIndex = stock.findIndex(
-    (s) => s.productId === productId && s.warehouseId === fromWarehouseId
-  );
-  
-  // Capture state BEFORE modification for audit/transaction safety
-  const sourceStockEntry = stock[sourceIndex];
-  const sourceQtyBefore = sourceStockEntry.quantity;
-  const sourceQtyAfter = sourceQtyBefore - quantity;
+    // Generate reference number
+    const referenceNumber = generateReferenceNumber('TRF', transfers);
+    const timestamp = getCurrentTimestamp();
 
-  // Update source
-  stock[sourceIndex].quantity = sourceQtyAfter;
+    // Update source stock (decrease)
+    const sourceIndex = stock.findIndex(
+      (s) => s.productId === productId && s.warehouseId === fromWarehouseId
+    );
 
-  // Update destination stock (increase or create)
-  const destIndex = stock.findIndex(
-    (s) => s.productId === productId && s.warehouseId === toWarehouseId
-  );
-  
-  let destQtyBefore = 0;
-  
-  if (destIndex !== -1) {
-    destQtyBefore = stock[destIndex].quantity;
-    stock[destIndex].quantity += quantity;
-  } else {
-    // Create new stock entry for destination
-    stock.push({
-      id: getNextId(stock),
-      productId,
-      warehouseId: toWarehouseId,
-      quantity,
-    });
-    // destQtyBefore defaults to 0
-  }
-  const destQtyAfter = destQtyBefore + quantity;
+    // Capture state BEFORE modification for audit/transaction safety
+    const sourceStockEntry = stock[sourceIndex];
+    const sourceQtyBefore = sourceStockEntry.quantity;
+    const sourceQtyAfter = sourceQtyBefore - quantity;
 
-  // Transaction: Save updated stock (Commit Point 1)
-  //
-  // ARCHITECTURAL NOTE:
-  // In a production SQL/NoSQL environment, this entire operation (stock update + audit log + transfer record)
-  // would be wrapped in a single ACID transaction (BEGIN...COMMIT).
-  //
-  // Since we are using JSON files for this POC, we accept the risk of disjoint writes
-  // in exchange for architecture simplicity. We mitigate logical inconsistencies by:
-  // 1. Calculating all values in memory before writing.
-  // 2. Passing explicit snapshots to the audit service to prevent stale reads.
-  // 3. Writing the 'source of truth' (Stock) first.
-  writeJsonFile(STOCK_FILE, stock);
+    // Update source
+    stock[sourceIndex].quantity = sourceQtyAfter;
 
-  // Log audit entries (Batched: 1 Write)
-  logStockChanges([
-    {
-      eventType: 'TRANSFER_OUT',
-      referenceNumber,
-      productId,
-      warehouseId: fromWarehouseId,
-      quantityChange: -quantity,
-      notes,
-      quantityBefore: sourceQtyBefore,
-      quantityAfter: sourceQtyAfter
-    },
-    {
-      eventType: 'TRANSFER_IN',
-      referenceNumber,
-      productId,
-      warehouseId: toWarehouseId,
-      quantityChange: quantity,
-      notes,
-      quantityBefore: destQtyBefore,
-      quantityAfter: destQtyAfter
+    // Update destination stock (increase or create)
+    const destIndex = stock.findIndex(
+      (s) => s.productId === productId && s.warehouseId === toWarehouseId
+    );
+
+    let destQtyBefore = 0;
+
+    if (destIndex !== -1) {
+      destQtyBefore = stock[destIndex].quantity;
+      stock[destIndex].quantity += quantity;
+    } else {
+      // Create new stock entry for destination
+      stock.push({
+        id: getNextId(stock),
+        productId,
+        warehouseId: toWarehouseId,
+        quantity,
+      });
+      // destQtyBefore defaults to 0
     }
-  ]);
+    const destQtyAfter = destQtyBefore + quantity;
 
-  // Create transfer record
-  const transfer: Transfer = {
-    id: getNextId(transfers),
-    referenceNumber,
-    productId,
-    fromWarehouseId,
-    toWarehouseId,
-    quantity,
-    status: 'completed',
-    createdAt: timestamp,
-    completedAt: timestamp,
-    ...(notes && { notes }),
-  };
+    // Transaction: Save updated stock (Commit Point 1)
+    //
+    // ARCHITECTURAL NOTE:
+    // In a production SQL/NoSQL environment, this entire operation (stock update + audit log + transfer record)
+    // would be wrapped in a single ACID transaction (BEGIN...COMMIT).
+    //
+    // Since we are using JSON files for this POC, we accept the risk of disjoint writes
+    // in exchange for architecture simplicity. We mitigate logical inconsistencies by:
+    // 1. Calculating all values in memory before writing.
+    // 2. Passing explicit snapshots to the audit service to prevent stale reads.
+    // 3. Writing the 'source of truth' (Stock) first.
+    writeJsonFile(STOCK_FILE, stock);
 
-  // Save transfer
-  transfers.push(transfer);
-  writeJsonFile(TRANSFERS_FILE, transfers);
+    // Log audit entries (Batched: 1 Write)
+    logStockChanges([
+      {
+        eventType: 'TRANSFER_OUT',
+        referenceNumber,
+        productId,
+        warehouseId: fromWarehouseId,
+        quantityChange: -quantity,
+        notes,
+        quantityBefore: sourceQtyBefore,
+        quantityAfter: sourceQtyAfter
+      },
+      {
+        eventType: 'TRANSFER_IN',
+        referenceNumber,
+        productId,
+        warehouseId: toWarehouseId,
+        quantityChange: quantity,
+        notes,
+        quantityBefore: destQtyBefore,
+        quantityAfter: destQtyAfter
+      }
+    ]);
 
-  return transfer;
+    // Create transfer record
+    const transfer: Transfer = {
+      id: getNextId(transfers),
+      referenceNumber,
+      productId,
+      fromWarehouseId,
+      toWarehouseId,
+      quantity,
+      status: 'completed',
+      createdAt: timestamp,
+      completedAt: timestamp,
+      ...(notes && { notes }),
+    };
+
+    // Save transfer
+    transfers.push(transfer);
+    writeJsonFile(TRANSFERS_FILE, transfers);
+
+    // 3. Post-Transfer: Check for Low Stock at Source Warehouse
+    // If the transfer depleted stock below reorder point, we must ensure an active alert exists.
+    try {
+      // Use pre-loaded products list
+      const product = products.find((p) => p.id === productId);
+
+      if (product) {
+        const newSourceStatus = getStockStatus(sourceQtyAfter, product.reorderPoint);
+
+        // If stock is now Low or Critical, trigger an alert
+        if (newSourceStatus === 'critical-low' || newSourceStatus === 'low-stock') {
+          // We use updateAlertStatus to "create or update" the record
+          // Force status to 'active' to ensure it pops up even if previously resolved
+          updateAlertStatus(productId, fromWarehouseId, {
+            status: 'active',
+            notes: `System: Alert triggered by Transfer Out ${referenceNumber} (-${quantity})`
+          });
+        }
+      }
+    } catch (err) {
+      // Non-blocking error - we don't want to fail the transfer if alert generation fails
+      console.error('Failed to generate post-transfer alert:', err);
+    }
+
+    return transfer;
+  });
 };
 
 // ============================================================================
@@ -239,17 +277,39 @@ export const executeTransfer = (req: CreateTransferRequest): Transfer => {
 // ============================================================================
 
 /**
- * Enrich a transfer with product and warehouse details
+ * Enrich a transfer with product and warehouse details.
+ * Optimized to accept lookup maps for O(1) access.
  */
-export const enrichTransfer = (transfer: Transfer): EnrichedTransfer => {
-  const products = readJsonFile<Product>(PRODUCTS_FILE);
-  const warehouses = readJsonFile<Warehouse>(WAREHOUSES_FILE);
-
-  const product = products.find((p) => p.id === transfer.productId);
-  const fromWarehouse = warehouses.find((w) => w.id === transfer.fromWarehouseId);
-  const toWarehouse = warehouses.find((w) => w.id === transfer.toWarehouseId);
-
+export const enrichTransfer = (
+  transfer: Transfer,
+  productMap?: Map<number, Product>,
+  warehouseMap?: Map<number, Warehouse>
+): EnrichedTransfer => {
   const { productId, fromWarehouseId, toWarehouseId, ...rest } = transfer;
+
+  // Resolve Product
+  let product: Product | undefined;
+  if (productMap) {
+    product = productMap.get(productId);
+  } else {
+    // Fallback: Read file (warn: O(1) I/O per call)
+    const products = readJsonFile<Product>(PRODUCTS_FILE);
+    product = products.find((p) => p.id === productId);
+  }
+
+  // Resolve Warehouses
+  let fromWarehouse: Warehouse | undefined;
+  let toWarehouse: Warehouse | undefined;
+
+  if (warehouseMap) {
+    fromWarehouse = warehouseMap.get(fromWarehouseId);
+    toWarehouse = warehouseMap.get(toWarehouseId);
+  } else {
+    // Fallback: Read file (warn: O(1) I/O per call)
+    const warehouses = readJsonFile<Warehouse>(WAREHOUSES_FILE);
+    fromWarehouse = warehouses.find((w) => w.id === fromWarehouseId);
+    toWarehouse = warehouses.find((w) => w.id === toWarehouseId);
+  }
 
   return {
     ...rest,
@@ -266,7 +326,8 @@ export const enrichTransfer = (transfer: Transfer): EnrichedTransfer => {
 };
 
 /**
- * Query transfers with filtering and pagination
+ * Query transfers with filtering and pagination.
+ * Optimized: Reduces File I/O from O(N) to O(1).
  */
 export const queryTransfers = (
   params: TransferQueryParams = {}
@@ -313,8 +374,18 @@ export const queryTransfers = (
   const clampedOffset = Math.max(0, offset);
   transfers = transfers.slice(clampedOffset, clampedOffset + clampedLimit);
 
-  // Enrich results
-  const enrichedTransfers = transfers.map(enrichTransfer);
+  // Optimization: Read reference data ONCE
+  const products = readJsonFile<Product>(PRODUCTS_FILE);
+  const warehouses = readJsonFile<Warehouse>(WAREHOUSES_FILE);
+
+  // Create fast lookup maps
+  const productMap = new Map(products.map((p) => [p.id, p]));
+  const warehouseMap = new Map(warehouses.map((w) => [w.id, w]));
+
+  // Enrich results using cached data
+  const enrichedTransfers = transfers.map((t) =>
+    enrichTransfer(t, productMap, warehouseMap)
+  );
 
   return {
     data: enrichedTransfers,

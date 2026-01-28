@@ -4,6 +4,7 @@
  */
 import { useState, useMemo, useCallback } from "react";
 import { useForm } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   transferFormSchema,
@@ -55,15 +56,21 @@ interface UseTransferFormLogicReturn {
 /**
  * Encapsulates all transfer form logic for cleaner component code.
  */
+import { useRouter } from "next/router";
+
+// ... inside hook ...
 export function useTransferFormLogic(
-  onTransferComplete?: () => void
+  onTransferComplete?: (referenceNumber?: string) => void
 ): UseTransferFormLogicReturn {
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const { fromWarehouseId } = router.query;
+
   const { watch, trigger, reset, setValue, setError, formState: { errors } } =
     useForm<TransferFormData>({
       resolver: zodResolver(transferFormSchema),
       defaultValues: {
-        fromWarehouseId: undefined,
+        fromWarehouseId: fromWarehouseId ? Number(fromWarehouseId) : undefined,
         toWarehouseId: undefined,
         productId: undefined,
         quantity: undefined,
@@ -79,6 +86,7 @@ export function useTransferFormLogic(
     stock,
     isLoading: initialLoading,
     error: dataError,
+    refetchStock,
   } = useReferenceData();
   // UI state
   const [activeStep, setActiveStep] = useState(0);
@@ -192,10 +200,18 @@ export function useTransferFormLogic(
         ...(validatedData.notes && { notes: validatedData.notes }),
       };
       // Defense-in-depth: verify stock availability before API call
-      if (availableStock !== null && request.quantity > availableStock) {
-        setSubmitError(`Insufficient stock. Available: ${availableStock}`);
+      // Fetch fresh stock data to avoid stale UI state
+      const { data: freshStockResult } = await refetchStock();
+      const freshStock = freshStockResult?.find(
+        (s) => s.productId === request.productId && s.warehouseId === request.fromWarehouseId
+      );
+      const currentAvailable = freshStock?.quantity ?? 0;
+
+      if (request.quantity > currentAvailable) {
+        setSubmitError(`Insufficient stock. Available: ${currentAvailable}`);
         return;
       }
+
       const response = await fetch("/api/transfers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -224,13 +240,17 @@ export function useTransferFormLogic(
       setActiveStep(0);
       // Invalidate stock query to refetch fresh data
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.stock });
-      onTransferComplete?.();
+
+      // Invalidate alerts to update notifications immediately
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.alerts });
+
+      onTransferComplete?.(responseData.referenceNumber);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Transfer failed");
     } finally {
       setLoading(false);
     }
-  }, [formValues, setError, reset, onTransferComplete, queryClient]);
+  }, [formValues, setError, reset, onTransferComplete, queryClient, refetchStock]);
   const clearSubmitError = useCallback(() => setSubmitError(null), []);
   const clearSuccess = useCallback(() => setSuccess(null), []);
   return {

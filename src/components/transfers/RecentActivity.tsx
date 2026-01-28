@@ -181,7 +181,27 @@ export default function RecentActivity({
         </Typography>
       )}
 
-      <Box sx={{ flex: 1, maxHeight, overflowY: "auto", pr: 1 }}>
+      <Box
+        sx={{
+          flex: 1,
+          maxHeight,
+          overflowY: "auto",
+          pr: 1,
+          "&::-webkit-scrollbar": {
+            width: "6px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: (theme) => theme.palette.grey[300],
+            borderRadius: "4px",
+          },
+          "&::-webkit-scrollbar-thumb:hover": {
+            background: (theme) => theme.palette.grey[400],
+          },
+        }}
+      >
         {loading && <LoadingSkeleton />}
         {!loading && events.length === 0 && (
           <Typography

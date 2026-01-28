@@ -1,136 +1,38 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
-<<<<<<< HEAD
+
+import { useDashboardData } from "@/hooks/useDashboardData";
 import { useRouter } from "next/router";
-=======
->>>>>>> feat/1-dashboard-redesign-clean
-import { Box, Grid2, Typography } from "@mui/material";
-import StatsGrid from "@/components/dashboard/StatsGrid";
+import { Box, Grid2, Button } from "@mui/material";
 import StockBarChart from "@/components/dashboard/StockBarChart";
 import ValueLineChart from "@/components/dashboard/ValueLineChart";
-<<<<<<< HEAD
 import DataTable from "@/components/common/DataTable";
-import { useInventoryColumns } from "@/hooks/columns/useInventoryColumns";
-=======
-import InventoryTable from "@/components/dashboard/InventoryTable";
->>>>>>> feat/1-dashboard-redesign-clean
+import { useInventoryColumns } from "@/components/dashboard/columns";
 import DashboardSkeleton from "@/components/dashboard/DashboardSkeleton";
 import ErrorState from "@/components/common/ErrorState";
-import type {
-  Product,
-  Warehouse,
-  Stock,
-  InventoryItem,
-  DashboardStats,
-  CategoryChartData,
-} from "@/types/inventory";
+import LowStockAlertBanner from "@/components/common/LowStockAlertBanner";
+import StatsList from "@/components/common/StatsList";
+import CategoryIcon from "@mui/icons-material/Category";
+import WarehouseIcon from "@mui/icons-material/Warehouse";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import { customPalette } from "@/theme/theme";
+import PageHeader from "@/components/common/PageHeader";
 
 export default function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
-  const [stock, setStock] = useState<Stock[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    stats,
+    chartData: barChartData,
+    inventoryOverview,
+    loading,
+    error,
+    refetch: fetchData,
+  } = useDashboardData();
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const [productsRes, warehousesRes, stockRes] = await Promise.all([
-        fetch("/api/products"),
-        fetch("/api/warehouses"),
-        fetch("/api/stock"),
-      ]);
-
-      if (!productsRes.ok || !warehousesRes.ok || !stockRes.ok) {
-        throw new Error("Failed to fetch data from one or more endpoints");
-      }
-
-      const [productsData, warehousesData, stockData] = await Promise.all([
-        productsRes.json() as Promise<Product[]>,
-        warehousesRes.json() as Promise<Warehouse[]>,
-        stockRes.json() as Promise<Stock[]>,
-      ]);
-
-      setProducts(productsData);
-      setWarehouses(warehousesData);
-      setStock(stockData);
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "An unexpected error occurred";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  // Calculate metrics with useMemo for future-proofing
-  // All hooks must be called before any early returns
-  const { inventoryOverview, lowStockCount, totalValue } = useMemo(() => {
-    let lowStock = 0;
-    let totalVal = 0;
-
-    const overview: InventoryItem[] = products.map((product) => {
-      const productStock = stock.filter((s) => s.productId === product.id);
-      const totalQuantity = productStock.reduce(
-        (sum, s) => sum + s.quantity,
-        0,
-      );
-      const isLowStock = totalQuantity <= product.reorderPoint;
-      if (isLowStock) lowStock++;
-
-      const productValue = product.unitCost * totalQuantity;
-      totalVal += productValue;
-
-      return {
-        ...product,
-        totalQuantity,
-        isLowStock,
-      };
-    });
-
-    return {
-      inventoryOverview: overview,
-      lowStockCount: lowStock,
-      totalValue: totalVal,
-    };
-  }, [products, stock]);
-
-  const barChartData = useMemo<CategoryChartData[]>(() => {
-    const stockByCategory: Record<string, number> = {};
-    inventoryOverview.forEach((item) => {
-      stockByCategory[item.category] =
-        (stockByCategory[item.category] || 0) + item.totalQuantity;
-    });
-    return Object.entries(stockByCategory).map(([category, value]) => ({
-      category,
-      value,
-    }));
-  }, [inventoryOverview]);
-
-  const stats = useMemo<DashboardStats>(
-    () => ({
-      totalProducts: products.length,
-      totalWarehouses: warehouses.length,
-      totalValue,
-      lowStockAlerts: lowStockCount,
-    }),
-    [products.length, warehouses.length, totalValue, lowStockCount],
-  );
-
-<<<<<<< HEAD
   const router = useRouter();
 
   const inventoryColumns = useInventoryColumns({
-    onEdit: (id) => void router.push(`/products/edit/${id}`),
+    onEdit: (id) => void router.push(`/products/${id}`), // Updated loop to detail view as Edit is gone 
   });
 
-=======
->>>>>>> feat/1-dashboard-redesign-clean
   // Early returns AFTER all hooks
   if (loading) {
     return <DashboardSkeleton />;
@@ -140,60 +42,88 @@ export default function Home() {
     return <ErrorState message={error} onRetry={fetchData} />;
   }
 
+  // Determine if charts should be full width (stacked) or side-by-side
+  const isLargeChart = barChartData.length > 8;
+
   return (
-<<<<<<< HEAD
     <Box sx={{ p: 1 }}>
-=======
-    <Box sx={{ p: 0 }}>
->>>>>>> feat/1-dashboard-redesign-clean
       {/* Header Section */}
-      <Box
-        sx={{
-          mb: 4,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Box>
-          <Typography
-            variant="h4"
-            component="h1"
-            sx={{ fontWeight: 700, mb: 1 }}
-          >
-            Dashboard
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Overview of inventory performance and stock levels.
-          </Typography>
-        </Box>
-      </Box>
+      <PageHeader
+        title="Dashboard"
+        description="Overview of inventory performance and stock levels."
+      />
 
       {/* Stats Grid */}
       <Box sx={{ mb: 4 }}>
-        <StatsGrid stats={stats} />
+        <StatsList
+          stats={[
+            {
+              title: "Total Products",
+              value: stats?.totalProducts || 0,
+              Icon: CategoryIcon,
+              iconColor: customPalette.stats.blue.icon,
+              iconBgColor: customPalette.stats.blue.bg,
+            },
+            {
+              title: "Warehouses",
+              value: stats?.totalWarehouses || 0,
+              Icon: WarehouseIcon,
+              iconColor: customPalette.stats.purple.icon,
+              iconBgColor: customPalette.stats.purple.bg,
+            },
+            {
+              title: "Total Inventory Value",
+              value: `$${(stats?.totalValue || 0).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}`,
+              Icon: AttachMoneyIcon,
+              iconColor: customPalette.stats.green.icon,
+              iconBgColor: customPalette.stats.green.bg,
+            },
+            {
+              title: "Low Stock Alerts",
+              value: stats?.lowStockAlerts || 0,
+              Icon: WarningAmberIcon,
+              iconColor: customPalette.stats.red.icon,
+              iconBgColor: customPalette.stats.red.bg,
+            },
+          ]}
+        />
       </Box>
+
+      {/* Critical Alerts Widget - Only show if there are critical items */}
+      <LowStockAlertBanner
+        count={stats?.lowStockAlerts || 0}
+        action={
+          <Button
+            variant="outlined"
+            color="error"
+            size="small"
+            onClick={() => router.push("/alerts?severity=critical")}
+            sx={{ flexShrink: 0, whiteSpace: "nowrap", ml: 2 }}
+          >
+            View Alerts
+          </Button>
+        }
+      />
 
       {/* Charts Section */}
       <Grid2 container spacing={3} sx={{ mb: 4 }}>
-        <Grid2 size={{ xs: 12, lg: 6 }}>
+        <Grid2 size={{ xs: 12, lg: isLargeChart ? 12 : 6 }}>
           <StockBarChart data={barChartData} />
         </Grid2>
-        <Grid2 size={{ xs: 12, lg: 6 }}>
+        <Grid2 size={{ xs: 12, lg: isLargeChart ? 12 : 6 }}>
           <ValueLineChart />
         </Grid2>
       </Grid2>
 
       {/* Detailed Table */}
-<<<<<<< HEAD
       <DataTable
         data={inventoryOverview}
         columns={inventoryColumns}
         title="Inventory Overview"
       />
-=======
-      <InventoryTable inventory={inventoryOverview} />
->>>>>>> feat/1-dashboard-redesign-clean
     </Box>
   );
 }

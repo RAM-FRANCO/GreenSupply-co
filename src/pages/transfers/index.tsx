@@ -4,7 +4,6 @@
  */
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Typography, Box, Button, Grid2, Tooltip } from "@mui/material";
-import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import DownloadIcon from "@mui/icons-material/Download";
 import TransferForm from "@/components/transfers/TransferForm";
 import TransferHistory from "@/components/transfers/TransferHistory";
@@ -15,6 +14,8 @@ import type {
   ActivityEvent,
   ActivityEventType,
 } from "@/types/transfers";
+import PageHeader from "@/components/common/PageHeader";
+import SuccessDialog from "@/components/common/SuccessDialog";
 
 /** Maximum activity events to display in sidebar timeline */
 const MAX_ACTIVITY_EVENTS = 5;
@@ -66,11 +67,11 @@ function createActivityEvents(
 export default function TransfersPage() {
   const [transfers, setTransfers] = useState<EnrichedTransfer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [total, setTotal] = useState(0);
+
 
   // Pagination state (controlled by parent for server-side pagination)
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
+  const [rowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
 
   const fetchTransfers = useCallback(async (limit: number, offset: number) => {
     setLoading(true);
@@ -80,7 +81,7 @@ export default function TransfersPage() {
       );
       const data: PaginatedResponse<EnrichedTransfer> = await response.json();
       setTransfers(data.data);
-      setTotal(data.total);
+
     } catch (error) {
       console.error("Failed to fetch transfers:", error);
     } finally {
@@ -93,18 +94,30 @@ export default function TransfersPage() {
     fetchTransfers(rowsPerPage, page * rowsPerPage);
   }, [fetchTransfers, page, rowsPerPage]);
 
-  // Callback for form completion - reset to first page and refetch
-  const handleTransferComplete = useCallback(() => {
+  // Callback for form completion - reset to first page, refetch, and show toast
+  const handleTransferComplete = useCallback((referenceNumber?: string) => {
     setPage(0);
     fetchTransfers(rowsPerPage, 0);
+    setSuccessModal({
+      open: true,
+      message: referenceNumber 
+        ? `Transfer ${referenceNumber} initiated successfully.` 
+        : "Transfer initiated successfully.",
+    });
   }, [fetchTransfers, rowsPerPage]);
 
-  // Callback for rows per page change - reset to first page
-  const handleRowsPerPageChange = useCallback((newRowsPerPage: number) => {
-    setRowsPerPage(newRowsPerPage);
-    setPage(0);
-  }, []);
+  // Success Modal State
+  const [successModal, setSuccessModal] = useState<{
+    open: boolean;
+    message: string;
+  }>({
+    open: false,
+    message: "",
+  });
 
+  const handleSuccessModalClose = () => {
+    setSuccessModal((prev) => ({ ...prev, open: false }));
+  };
   // Generate activity events from transfers
   const activityEvents = useMemo(
     () => createActivityEvents(transfers),
@@ -121,36 +134,11 @@ export default function TransfersPage() {
       }}
     >
       {/* Page Header */}
-      <Box
-        sx={{
-          mb: 4,
-          display: "flex",
-          flexDirection: { xs: "column", md: "row" },
-          alignItems: { xs: "flex-start", md: "center" },
-          justifyContent: "space-between",
-          gap: 2,
-        }}
+      {/* Page Header */}
+      <PageHeader
+        title="Stock Transfers"
+        description="Manage inventory movement between warehouse locations."
       >
-        <Box>
-          <Typography
-            variant="h4"
-            component="h1"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              fontWeight: 700,
-              mb: 0.5,
-            }}
-          >
-            <SwapHorizIcon fontSize="large" color="primary" />
-            Stock Transfers
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Manage inventory movement between warehouse locations.
-          </Typography>
-        </Box>
-
         <Tooltip title="Coming soon">
           <span>
             <Button
@@ -163,7 +151,7 @@ export default function TransfersPage() {
             </Button>
           </span>
         </Tooltip>
-      </Box>
+      </PageHeader>
 
       {/* Transfer Wizard Section */}
       <Box sx={{ mb: 5 }}>
@@ -189,13 +177,9 @@ export default function TransfersPage() {
           <TransferHistory
             transfers={transfers}
             loading={loading}
-            total={total}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={setPage}
-            onRowsPerPageChange={handleRowsPerPageChange}
             hideHeader
-            maxHeight={450}
+
+            sx={{ height: "100%", display: "flex", flexDirection: "column" }}
           />
         </Grid2>
 
@@ -221,6 +205,13 @@ export default function TransfersPage() {
           />
         </Grid2>
       </Grid2>
+      <SuccessDialog
+        open={successModal.open}
+        onClose={handleSuccessModalClose}
+        title="Transfer Initiated"
+        message={successModal.message}
+        buttonText="Close"
+      />
     </Box>
   );
 }
