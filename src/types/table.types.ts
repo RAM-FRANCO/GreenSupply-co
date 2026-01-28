@@ -1,4 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table";
+import { SxProps, Theme } from "@mui/material";
 
 /**
  * Extended column metadata for MUI styling
@@ -42,4 +43,23 @@ export interface DataTableProps<T> {
   readonly isLoading?: boolean;
   /** Empty state message */
   readonly emptyMessage?: string;
+  /** Custom empty state component (overrides emptyMessage) */
+  readonly emptyState?: React.ReactNode;
+  /** Function to render expanded row content */
+  readonly renderSubComponent?: (props: { row: T }) => React.ReactNode;
+  /** Function to determine if a row can be expanded */
+  /** Function to determine if a row can be expanded */
+  readonly getRowCanExpand?: (row: T) => boolean;
+  /** Total page count for manual pagination */
+  readonly pageCount?: number;
+  /** Controlled pagination state */
+  readonly paginationState?: { pageIndex: number; pageSize: number };
+  /** Callback for pagination changes */
+  readonly onPaginationChange?: (state: { pageIndex: number; pageSize: number }) => void;
+  /** Row click handler */
+  readonly onRowClick?: (row: T) => void;
+  /** Total row count (optional override) */
+  readonly rowCount?: number;
+  /** Custom styles */
+  readonly sx?: SxProps<Theme>;
 }

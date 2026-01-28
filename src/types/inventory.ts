@@ -3,11 +3,14 @@
  */
 export interface Product {
   id: number;
+  slug: string; // URL-friendly identifier
   sku: string;
   name: string;
-  category: string;
+  categoryId: string; // Refactor: Tag by ID
   unitCost: number;
   reorderPoint: number;
+  description?: string;
+  image?: string;
 }
 
 /**
@@ -15,9 +18,15 @@ export interface Product {
  */
 export interface Warehouse {
   id: number;
+  slug: string; // New: Readable URL slug
   name: string;
   location: string;
   code: string;
+  managerName?: string; // New: Real manager data
+  maxSlots?: number;    // New: For capacity calculation
+  type?: "Distribution Center" | "Fulfillment Center" | "Cold Storage" | "Retail Store";
+  skuCount?: number;     // New: Calculated SKU count
+  totalQuantity?: number; // New: Calculated total items
 }
 
 /**
@@ -62,4 +71,15 @@ export interface CategoryChartData {
 export interface TrendChartData {
   month: string;
   value: number;
+}
+
+/**
+ * Stock statistics for alerts page
+ */
+export interface StockStats {
+  healthyPercentage: number;
+  healthyTrend: number;
+  approachingReorder: number;
+  belowThreshold: number;
+  pendingReorders: number;
 }

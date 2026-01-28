@@ -1,11 +1,14 @@
 
 export interface Product {
     id: number;
+    slug: string;
     sku: string;
     name: string;
-    category: string;
+    categoryId: string;
     unitCost: number;
     reorderPoint: number;
+    description?: string;
+    image?: string;
 }
 
 export interface Stock {
