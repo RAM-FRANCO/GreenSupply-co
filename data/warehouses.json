@@ -1,20 +1,38 @@
 [
   {
     "id": 1,
-    "name": "Main Distribution Center",
+    "name": "Main Distribution Center test",
+    "slug": "main-distribution-center",
     "location": "Newark, NJ",
-    "code": "NDC-01"
+    "code": "NDC-01",
+    "maxSlots": 10000,
+    "type": "Cold Storage",
+    "managerName": "Michael Brown"
   },
   {
     "id": 2,
     "name": "West Coast Facility",
+    "slug": "west-coast-facility",
     "location": "Los Angeles, CA",
-    "code": "WCF-02"
+    "code": "WCF-02",
+    "maxSlots": 250000,
+    "type": "Retail Store"
   },
   {
     "id": 3,
     "name": "Southern Hub",
+    "slug": "southern-hub",
     "location": "Dallas, TX",
     "code": "STH-03"
+  },
+  {
+    "code": "TW-71",
+    "name": "Test warehouse",
+    "slug": "test-warehouse",
+    "location": "Newark, NJ",
+    "managerName": "Jennifer Taylor",
+    "maxSlots": 500,
+    "type": "Fulfillment Center",
+    "id": 4
   }
 ]

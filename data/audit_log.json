@@ -110,5 +110,159 @@
     "quantityBefore": 800,
     "quantityAfter": 820,
     "timestamp": "2026-01-22T12:07:45.587Z"
+  },
+  {
+    "id": 11,
+    "eventType": "TRANSFER_OUT",
+    "referenceNumber": "TRF-20260122-0010",
+    "productId": 2,
+    "warehouseId": 1,
+    "quantityChange": -676,
+    "quantityBefore": 1180,
+    "quantityAfter": 504,
+    "timestamp": "2026-01-22T13:06:39.557Z"
+  },
+  {
+    "id": 12,
+    "eventType": "TRANSFER_IN",
+    "referenceNumber": "TRF-20260122-0010",
+    "productId": 2,
+    "warehouseId": 3,
+    "quantityChange": 676,
+    "quantityBefore": 820,
+    "quantityAfter": 1496,
+    "timestamp": "2026-01-22T13:06:39.557Z"
+  },
+  {
+    "id": 13,
+    "eventType": "TRANSFER_OUT",
+    "referenceNumber": "TRF-20260122-0010",
+    "productId": 1,
+    "warehouseId": 1,
+    "quantityChange": -240,
+    "quantityBefore": 240,
+    "quantityAfter": 0,
+    "timestamp": "2026-01-22T15:54:44.985Z"
+  },
+  {
+    "id": 14,
+    "eventType": "TRANSFER_IN",
+    "referenceNumber": "TRF-20260122-0010",
+    "productId": 1,
+    "warehouseId": 2,
+    "quantityChange": 240,
+    "quantityBefore": 160,
+    "quantityAfter": 400,
+    "timestamp": "2026-01-22T15:54:44.985Z"
+  },
+  {
+    "id": 15,
+    "eventType": "TRANSFER_OUT",
+    "referenceNumber": "TRF-20260122-0011",
+    "productId": 2,
+    "warehouseId": 1,
+    "quantityChange": -504,
+    "quantityBefore": 504,
+    "quantityAfter": 0,
+    "timestamp": "2026-01-22T16:10:23.105Z"
+  },
+  {
+    "id": 16,
+    "eventType": "TRANSFER_IN",
+    "referenceNumber": "TRF-20260122-0011",
+    "productId": 2,
+    "warehouseId": 2,
+    "quantityChange": 504,
+    "quantityBefore": 700,
+    "quantityAfter": 1204,
+    "timestamp": "2026-01-22T16:10:23.105Z"
+  },
+  {
+    "id": 17,
+    "eventType": "TRANSFER_OUT",
+    "referenceNumber": "TRF-20260122-0012",
+    "productId": 1,
+    "warehouseId": 1,
+    "quantityChange": -10,
+    "quantityBefore": 10,
+    "quantityAfter": 0,
+    "timestamp": "2026-01-22T17:42:28.928Z"
+  },
+  {
+    "id": 18,
+    "eventType": "TRANSFER_IN",
+    "referenceNumber": "TRF-20260122-0012",
+    "productId": 1,
+    "warehouseId": 2,
+    "quantityChange": 10,
+    "quantityBefore": 400,
+    "quantityAfter": 410,
+    "timestamp": "2026-01-22T17:42:28.928Z"
+  },
+  {
+    "id": 19,
+    "eventType": "TRANSFER_OUT",
+    "referenceNumber": "TRF-20260122-0013",
+    "productId": 4,
+    "warehouseId": 1,
+    "quantityChange": -950,
+    "quantityBefore": 950,
+    "quantityAfter": 0,
+    "timestamp": "2026-01-22T17:43:09.102Z"
+  },
+  {
+    "id": 20,
+    "eventType": "TRANSFER_IN",
+    "referenceNumber": "TRF-20260122-0013",
+    "productId": 4,
+    "warehouseId": 3,
+    "quantityChange": 950,
+    "quantityBefore": 0,
+    "quantityAfter": 950,
+    "timestamp": "2026-01-22T17:43:09.102Z"
+  },
+  {
+    "id": 21,
+    "eventType": "TRANSFER_OUT",
+    "referenceNumber": "TRF-20260128-0001",
+    "productId": 1,
+    "warehouseId": 1,
+    "quantityChange": -29,
+    "quantityBefore": 420,
+    "quantityAfter": 391,
+    "timestamp": "2026-01-28T00:22:04.940Z"
+  },
+  {
+    "id": 22,
+    "eventType": "TRANSFER_IN",
+    "referenceNumber": "TRF-20260128-0001",
+    "productId": 1,
+    "warehouseId": 2,
+    "quantityChange": 29,
+    "quantityBefore": 410,
+    "quantityAfter": 439,
+    "timestamp": "2026-01-28T00:22:04.940Z"
+  },
+  {
+    "id": 23,
+    "eventType": "TRANSFER_OUT",
+    "referenceNumber": "TRF-20260128-0002",
+    "productId": 4,
+    "warehouseId": 1,
+    "quantityChange": -99,
+    "quantityBefore": 1500,
+    "quantityAfter": 1401,
+    "timestamp": "2026-01-28T00:28:41.921Z"
+  },
+  {
+    "id": 24,
+    "eventType": "TRANSFER_IN",
+    "referenceNumber": "TRF-20260128-0002",
+    "productId": 4,
+    "warehouseId": 2,
+    "quantityChange": 99,
+    "quantityBefore": 1500,
+    "quantityAfter": 1599,
+    "timestamp": "2026-01-28T00:28:41.921Z"
   }
 ]
