@@ -53,6 +53,11 @@ interface UseInventoryDataResult {
   ) => Promise<void>;
   updateProduct: (productId: number, data: Partial<Product>) => Promise<void>;
   receiveOrder: (orderId: number) => Promise<void>;
+  createPurchaseOrder: (
+    productId: number,
+    warehouseId: number,
+    quantity: number,
+  ) => Promise<void>;
 }
 
 export function useInventoryData(): UseInventoryDataResult {
@@ -199,6 +204,9 @@ export function useInventoryData(): UseInventoryDataResult {
     quantity: number,
   ) => {
     try {
+      // Use the new standard endpoint, but keep function name for compatibility if needed.
+      // Actually, let's keep reorderStock using the stock/reorder endpoint in case there is specific logic there,
+      // but simpler is better.
       const res = await fetch("/api/stock/reorder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -213,6 +221,30 @@ export function useInventoryData(): UseInventoryDataResult {
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to reorder stock";
+      throw new Error(message);
+    }
+  };
+
+  const createPurchaseOrder = async (
+    productId: number,
+    warehouseId: number,
+    quantity: number,
+  ) => {
+    try {
+      const res = await fetch("/api/purchase-orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, warehouseId, quantity }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to create purchase order");
+      }
+
+      await refetch();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to create purchase order";
       throw new Error(message);
     }
   };
@@ -299,5 +331,6 @@ export function useInventoryData(): UseInventoryDataResult {
     updateAlertStatus,
     updateProduct,
     receiveOrder,
+    createPurchaseOrder,
   };
 }

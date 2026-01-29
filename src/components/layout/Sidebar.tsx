@@ -20,6 +20,7 @@ import WarehouseIcon from "@mui/icons-material/Warehouse";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import SettingsIcon from "@mui/icons-material/Settings";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import SpaIcon from "@mui/icons-material/Spa";
 import { customPalette } from "@/theme/theme";
 import { ReactNode } from "react";
@@ -50,6 +51,7 @@ export default function Sidebar({ mobileOpen, onDrawerToggle }: SidebarProps) {
     { text: "Warehouses", icon: <WarehouseIcon />, href: "/warehouses" },
     { type: "header", text: "Operations" },
     { text: "Stock Levels", icon: <BarChartIcon />, href: "/alerts" },
+    { text: "Purchase Orders", icon: <ShoppingCartIcon />, href: "/purchase-orders" },
     { text: "Transfers", icon: <SwapHorizIcon />, href: "/transfers" },
     // { type: "header", text: "Reports" },
     // { text: "Sales Trends", icon: <TrendingUpIcon />, href: "/trends" },
