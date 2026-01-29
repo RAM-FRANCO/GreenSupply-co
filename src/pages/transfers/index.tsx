@@ -3,7 +3,7 @@
  * Features form, history table, and activity timeline
  */
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Typography, Box, Button, Grid2, Tooltip } from "@mui/material";
+import { Typography, Box, Button, Grid2 } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import TransferForm from "@/components/transfers/TransferForm";
 import TransferHistory from "@/components/transfers/TransferHistory";
@@ -16,6 +16,9 @@ import type {
 } from "@/types/transfers";
 import PageHeader from "@/components/common/PageHeader";
 import SuccessDialog from "@/components/common/SuccessDialog";
+import { exportToPdf } from "@/utils/exportUtils";
+import TransferExportDialog from "@/components/transfers/TransferExportDialog";
+import { format, isWithinInterval } from "date-fns";
 
 /** Maximum activity events to display in sidebar timeline */
 const MAX_ACTIVITY_EVENTS = 5;
@@ -67,6 +70,8 @@ function createActivityEvents(
 export default function TransfersPage() {
   const [transfers, setTransfers] = useState<EnrichedTransfer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
 
 
   // Pagination state (controlled by parent for server-side pagination)
@@ -118,6 +123,53 @@ export default function TransfersPage() {
   const handleSuccessModalClose = () => {
     setSuccessModal((prev) => ({ ...prev, open: false }));
   };
+
+  const handleExportPDF = async (startDate: Date | null, endDate: Date | null) => {
+    setExportLoading(true);
+    try {
+        const response = await fetch('/api/transfers?limit=10000&offset=0');
+        const data: PaginatedResponse<EnrichedTransfer> = await response.json();
+        let exportItems = data.data;
+
+        if (startDate && endDate) {
+            exportItems = exportItems.filter(item => {
+                const date = new Date(item.createdAt);
+                return isWithinInterval(date, { start: startDate, end: endDate });
+            });
+        }
+
+        const exportRows = exportItems.map(t => ({
+            Reference: t.referenceNumber,
+            Product: t.product?.name,
+            From: t.fromWarehouse?.name,
+            To: t.toWarehouse?.name,
+            Quantity: t.quantity,
+            Status: t.status,
+            Date: format(new Date(t.createdAt), 'yyyy-MM-dd HH:mm')
+        }));
+
+        exportToPdf({
+            title: 'Stock Transfers Report',
+            columns: [
+                { header: 'Reference', dataKey: 'Reference' },
+                { header: 'Product', dataKey: 'Product' },
+                { header: 'From', dataKey: 'From' },
+                { header: 'To', dataKey: 'To' },
+                { header: 'Quantity', dataKey: 'Quantity' },
+                { header: 'Status', dataKey: 'Status' },
+                { header: 'Date', dataKey: 'Date' },
+            ],
+            data: exportRows
+        });
+
+    } catch (e) {
+        console.error(e);
+        alert("Failed to export transfers");
+    } finally {
+        setExportLoading(false);
+    }
+  };
+
   // Generate activity events from transfers
   const activityEvents = useMemo(
     () => createActivityEvents(transfers),
@@ -139,18 +191,14 @@ export default function TransfersPage() {
         title="Stock Transfers"
         description="Manage inventory movement between warehouse locations."
       >
-        <Tooltip title="Coming soon">
-          <span>
-            <Button
-              variant="outlined"
-              startIcon={<DownloadIcon />}
-              disabled
-              sx={{ borderRadius: 2 }}
-            >
-              Export Data
-            </Button>
-          </span>
-        </Tooltip>
+        <Button
+          variant="outlined"
+          startIcon={<DownloadIcon />}
+          sx={{ borderRadius: 2 }}
+          onClick={() => setExportOpen(true)}
+        >
+          Export Data
+        </Button>
       </PageHeader>
 
       {/* Transfer Wizard Section */}
@@ -210,6 +258,13 @@ export default function TransfersPage() {
         title="Transfer Initiated"
         message={successModal.message}
         buttonText="Close"
+      />
+      
+      <TransferExportDialog
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        onExport={handleExportPDF}
+        loading={exportLoading}
       />
     </Box>
   );

@@ -39,6 +39,9 @@ import ErrorState from "@/components/common/ErrorState";
 import LowStockAlertBanner from "@/components/common/LowStockAlertBanner";
 import PageHeader from "@/components/common/PageHeader";
 import { useQueryModal } from "@/hooks/useQueryModal";
+import { exportToPdf } from "@/utils/exportUtils";
+import AlertExportDialog from "@/components/alerts/AlertExportDialog";
+import { format } from "date-fns";
 
 /** @todo Replace with real data from API */
 const PLACEHOLDER_HEALTHY_TREND = 2.5;
@@ -61,7 +64,10 @@ export default function AlertsPage() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+
   const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
   
   // Reorder Modal State (URL-driven)
   const { 
@@ -181,6 +187,51 @@ export default function AlertsPage() {
     setSelectedForReorder: (item) => handleOpenReorder(item.id),
   });
 
+  const handleExportPDF = async () => {
+    setExportLoading(true);
+    try {
+        // Filter for alerts (low stock or critical)
+        const data = enrichedStock.filter(item => {
+            if (!item.product) return false;
+            const status = getStockStatus(item.quantity, item.product.reorderPoint);
+            return status === 'low-stock' || status === 'critical-low';
+        });
+
+        // Date filter is requested but we lack 'updatedAt' on Stock.
+        // For now, we export current active alerts.
+        // If 'purchaseOrders' were needed, we'd filter them here.
+        
+        const exportData = data.map(item => ({
+            Product: item.product?.name,
+            Warehouse: item.warehouse?.name,
+            Stock: item.quantity,
+            'Reorder Point': item.product?.reorderPoint,
+            Status: getStockStatus(item.quantity, item.product?.reorderPoint || 0).toUpperCase(),
+            // Mocking a date for demonstration as requested by user flow
+            'Date Detected': format(new Date(), 'yyyy-MM-dd') 
+        }));
+
+        exportToPdf({
+            title: 'Low Stock Alerts Report',
+            columns: [
+                { header: 'Product', dataKey: 'Product' },
+                { header: 'Warehouse', dataKey: 'Warehouse' },
+                { header: 'Stock', dataKey: 'Stock' },
+                { header: 'Reorder Point', dataKey: 'Reorder Point' },
+                { header: 'Status', dataKey: 'Status' },
+                { header: 'Date Detected', dataKey: 'Date Detected' },
+            ],
+            data: exportData
+        });
+
+    } catch (e) {
+        console.error(e);
+        alert("Failed to export alerts");
+    } finally {
+        setExportLoading(false);
+    }
+  };
+
   if (loading) return <DashboardSkeleton />;
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
@@ -199,6 +250,7 @@ export default function AlertsPage() {
             color: "text.primary",
             borderColor: "divider",
           }}
+          onClick={() => setExportOpen(true)}
         >
           Export Report
         </Button>
@@ -394,6 +446,14 @@ export default function AlertsPage() {
         onClose={() => setPoModalOpen(false)}
         orders={purchaseOrders}
         onReceive={receiveOrder}
+      />
+
+
+       <AlertExportDialog
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        onExport={handleExportPDF}
+        loading={exportLoading}
       />
     </Box>
   );

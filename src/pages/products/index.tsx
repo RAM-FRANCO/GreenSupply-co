@@ -33,6 +33,8 @@ import { useRouter } from "next/router";
 import { usePaginatedData } from "@/hooks/usePaginatedData";
 import { useUrlParams } from "@/hooks/useUrlParams";
 import type { ProductWithStock } from "@/types/index"; 
+import { exportToPdf } from "@/utils/exportUtils";
+import ProductExportDialog from "@/components/products/ProductExportDialog"; 
 
 export default function Products() {
   const router = useRouter();
@@ -99,6 +101,8 @@ export default function Products() {
   const [adjustModalOpen, setAdjustModalOpen] = useState(false);
   const [adjustLoading, setAdjustLoading] = useState(false);
   const [poModalOpen, setPoModalOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
 
   // Product Dialog State (Derived from URL via hook)
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -206,6 +210,51 @@ export default function Products() {
     }
   };
 
+
+  const handleExportPDF = async (type: 'all' | 'category', categoryId?: string) => {
+    setExportLoading(true);
+    try {
+      let url = '/api/products?limit=10000'; // Fetch all
+      if (type === 'category' && categoryId) {
+        url += `&category=${categoryId}`;
+      }
+
+      const res = await fetch(url);
+      const { data } = await res.json();
+
+      const exportData = data.map((p: ProductWithStock) => ({
+        SKU: p.sku,
+        Name: p.name,
+        Category: categories.find((c) => c.id === p.categoryId)?.name || 'N/A',
+        Stock: p.currentStock,
+        'Unit Cost': new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(p.unitCost),
+        'Total Value': new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(p.currentStock * p.unitCost),
+        Status: p.stockStatus
+      }));
+
+      exportToPdf({
+        title: type === 'category' 
+          ? `Product Inventory - ${categories.find(c => c.id === categoryId)?.name || 'Category'}` 
+          : 'Product Inventory Report',
+        columns: [
+          { header: 'SKU', dataKey: 'SKU' },
+          { header: 'Name', dataKey: 'Name' },
+          { header: 'Category', dataKey: 'Category' },
+          { header: 'Stock', dataKey: 'Stock' },
+          { header: 'Unit Cost', dataKey: 'Unit Cost' },
+          { header: 'Total Value', dataKey: 'Total Value' },
+          { header: 'Status', dataKey: 'Status' },
+        ],
+        data: exportData,
+      });
+
+    } catch (error) {
+      console.error("Export failed:", error);
+      alert("Failed to export data");
+    } finally {
+      setExportLoading(false);
+    }
+  };
   const columns = useProductColumns({
     onDelete: confirmDelete,
     categories,
@@ -232,6 +281,7 @@ export default function Products() {
             variant="outlined"
             startIcon={<DownloadIcon />}
             sx={{ bgcolor: "background.paper", borderColor: "divider" }}
+            onClick={() => setExportOpen(true)}
           >
             Export
           </Button>
@@ -389,6 +439,15 @@ export default function Products() {
         onClose={() => setPoModalOpen(false)}
         orders={purchaseOrders || []}
         onReceive={receiveOrder}
+
+      />
+
+      <ProductExportDialog 
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        categories={categories}
+        onExport={handleExportPDF}
+        loading={exportLoading}
       />
     </Box>
    );
