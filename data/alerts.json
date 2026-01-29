@@ -80,5 +80,43 @@
     "createdAt": "2026-01-28T23:24:15.223Z",
     "updatedAt": "2026-01-28T23:24:15.223Z",
     "acknowledgedAt": "2026-01-28T23:24:15.223Z"
+  },
+  {
+    "id": 9,
+    "productId": 10,
+    "warehouseId": 4,
+    "status": "resolved",
+    "createdAt": "2026-01-29T00:41:37.912Z",
+    "updatedAt": "2026-01-29T00:45:06.699Z",
+    "acknowledgedAt": "2026-01-29T00:41:37.912Z",
+    "resolvedAt": "2026-01-29T00:45:06.699Z",
+    "notes": "System: Received PO #15 (+50 units)"
+  },
+  {
+    "id": 10,
+    "productId": 8,
+    "warehouseId": 5,
+    "status": "acknowledged",
+    "createdAt": "2026-01-29T00:42:23.056Z",
+    "updatedAt": "2026-01-29T00:42:23.056Z",
+    "acknowledgedAt": "2026-01-29T00:42:23.056Z"
+  },
+  {
+    "id": 11,
+    "productId": 10,
+    "warehouseId": 3,
+    "status": "acknowledged",
+    "createdAt": "2026-01-29T00:42:52.911Z",
+    "updatedAt": "2026-01-29T00:42:52.911Z",
+    "acknowledgedAt": "2026-01-29T00:42:52.911Z"
+  },
+  {
+    "id": 12,
+    "productId": 10,
+    "warehouseId": 5,
+    "status": "acknowledged",
+    "createdAt": "2026-01-29T00:44:32.690Z",
+    "updatedAt": "2026-01-29T00:44:32.690Z",
+    "acknowledgedAt": "2026-01-29T00:44:32.690Z"
   }
 ]

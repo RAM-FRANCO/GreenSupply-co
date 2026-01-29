@@ -86,5 +86,16 @@
     "reorderPoint": 200,
     "description": "THIS IS A TEST",
     "image": "/uploads/1769641418658_icon-512 (1).png"
+  },
+  {
+    "id": 11,
+    "slug": "tw333",
+    "sku": "test",
+    "name": "tw333",
+    "categoryId": "utensils",
+    "unitCost": 20,
+    "reorderPoint": 2000,
+    "description": "asdsad",
+    "image": ""
   }
 ]

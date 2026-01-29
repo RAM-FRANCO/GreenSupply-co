@@ -308,5 +308,27 @@
     "quantityBefore": 20,
     "quantityAfter": 40,
     "timestamp": "2026-01-28T23:34:09.628Z"
+  },
+  {
+    "id": 29,
+    "eventType": "TRANSFER_OUT",
+    "referenceNumber": "TRF-20260129-0001",
+    "productId": 1,
+    "warehouseId": 2,
+    "quantityChange": -40,
+    "quantityBefore": 439,
+    "quantityAfter": 399,
+    "timestamp": "2026-01-29T00:54:55.718Z"
+  },
+  {
+    "id": 30,
+    "eventType": "TRANSFER_IN",
+    "referenceNumber": "TRF-20260129-0001",
+    "productId": 1,
+    "warehouseId": 1,
+    "quantityChange": 40,
+    "quantityBefore": 400,
+    "quantityAfter": 440,
+    "timestamp": "2026-01-29T00:54:55.718Z"
   }
 ]

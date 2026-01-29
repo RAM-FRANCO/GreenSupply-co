@@ -3,14 +3,14 @@
     "id": 1,
     "productId": 1,
     "warehouseId": 1,
-    "quantity": 400,
+    "quantity": 440,
     "lastUpdated": "2026-01-25T19:59:03.103Z"
   },
   {
     "id": 2,
     "productId": 1,
     "warehouseId": 2,
-    "quantity": 439
+    "quantity": 399
   },
   {
     "id": 3,
@@ -107,5 +107,11 @@
     "productId": 10,
     "warehouseId": 1,
     "quantity": 400
+  },
+  {
+    "id": 21,
+    "productId": 10,
+    "warehouseId": 4,
+    "quantity": 50
   }
 ]
