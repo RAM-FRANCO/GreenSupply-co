@@ -6,6 +6,7 @@ import {
 import type { Stock } from '@/types/inventory';
 import type { AlertRecord } from '@/types/alerts';
 import type { PurchaseOrder } from '@/types/purchaseOrder';
+import { updateAlertStatus } from './alertService';
 
 const STOCK_FILE = 'stock.json';
 const ALERTS_FILE = 'alerts.json';
@@ -134,6 +135,15 @@ export const reorderStock = (
   quantity: number
 ): { success: boolean; message: string } => {
   const result = createPurchaseOrder(productId, warehouseId, quantity);
+
+  // Implicitly acknowledge the alert if one exists
+  try {
+    // We update the status to 'acknowledged' so it stops showing as "unread" in the notification menu
+    updateAlertStatus(productId, warehouseId, { status: 'acknowledged' });
+  } catch (e) {
+    console.error("Failed to auto-acknowledge alert", e);
+  }
+
   return {
     success: result.success,
     message: "Purchase Order Created (Pending)"

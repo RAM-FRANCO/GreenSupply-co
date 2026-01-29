@@ -71,7 +71,7 @@ export default function AlertDetailsModal({
             </Typography>
             <Typography variant="h6">{alert.product.name}</Typography>
             <Typography variant="body2" color="text.secondary">
-              SKU: {alert.product.sku} • Category: {alert.product.category}
+              SKU: {alert.product.sku} • Category ID: {alert.product.categoryId}
             </Typography>
           </Grid2>
 

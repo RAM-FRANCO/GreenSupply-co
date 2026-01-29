@@ -264,5 +264,49 @@
     "quantityBefore": 1500,
     "quantityAfter": 1599,
     "timestamp": "2026-01-28T00:28:41.921Z"
+  },
+  {
+    "id": 25,
+    "eventType": "TRANSFER_OUT",
+    "referenceNumber": "TRF-20260128-0003",
+    "productId": 3,
+    "warehouseId": 1,
+    "quantityChange": -20,
+    "quantityBefore": 2500,
+    "quantityAfter": 2480,
+    "timestamp": "2026-01-28T01:44:58.432Z"
+  },
+  {
+    "id": 26,
+    "eventType": "TRANSFER_IN",
+    "referenceNumber": "TRF-20260128-0003",
+    "productId": 3,
+    "warehouseId": 2,
+    "quantityChange": 20,
+    "quantityBefore": 1800,
+    "quantityAfter": 1820,
+    "timestamp": "2026-01-28T01:44:58.432Z"
+  },
+  {
+    "id": 27,
+    "eventType": "TRANSFER_OUT",
+    "referenceNumber": "TRF-20260128-0004",
+    "productId": 8,
+    "warehouseId": 1,
+    "quantityChange": -20,
+    "quantityBefore": 81,
+    "quantityAfter": 61,
+    "timestamp": "2026-01-28T23:34:09.628Z"
+  },
+  {
+    "id": 28,
+    "eventType": "TRANSFER_IN",
+    "referenceNumber": "TRF-20260128-0004",
+    "productId": 8,
+    "warehouseId": 2,
+    "quantityChange": 20,
+    "quantityBefore": 20,
+    "quantityAfter": 40,
+    "timestamp": "2026-01-28T23:34:09.628Z"
   }
 ]

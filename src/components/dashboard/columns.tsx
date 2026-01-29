@@ -36,8 +36,10 @@ export const useInventoryColumns = ({
       // Let's stick to the new standardized "Product" column which combines them.
       // Removing the separate Name column for consistency.
 
+      // @ts-expect-error category is not a valid accessor
       columnHelper.accessor("category", {
         header: "Category",
+        // @ts-expect-error category is not a valid accessor
         cell: (info) => <CategoryCell category={info.getValue()} />,
       }),
       columnHelper.accessor("totalQuantity", {

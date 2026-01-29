@@ -45,10 +45,10 @@
     "warehouseId": 1,
     "status": "resolved",
     "createdAt": "2026-01-22T16:10:33.429Z",
-    "updatedAt": "2026-01-28T00:17:52.943Z",
+    "updatedAt": "2026-01-28T01:38:38.953Z",
     "acknowledgedAt": "2026-01-28T00:03:35.419Z",
-    "notes": "System: Alert triggered by Transfer Out TRF-20260122-0012 (-10)\nSystem: Received PO #3 (+210 units)\nSystem: Received PO #4 (+210 units)",
-    "resolvedAt": "2026-01-28T00:17:52.943Z"
+    "notes": "System: Alert triggered by Transfer Out TRF-20260122-0012 (-10)\nSystem: Received PO #3 (+210 units)\nSystem: Received PO #4 (+210 units)\nSystem: Received PO #10 (+9 units)",
+    "resolvedAt": "2026-01-28T01:38:38.953Z"
   },
   {
     "id": 6,
@@ -60,5 +60,25 @@
     "notes": "System: Alert triggered by Transfer Out TRF-20260122-0013 (-950)\nSystem: Received PO #1 (+1500 units)",
     "acknowledgedAt": "2026-01-28T00:03:28.326Z",
     "resolvedAt": "2026-01-28T00:15:21.063Z"
+  },
+  {
+    "id": 7,
+    "productId": 9,
+    "warehouseId": 1,
+    "status": "resolved",
+    "createdAt": "2026-01-28T01:45:07.571Z",
+    "updatedAt": "2026-01-28T01:45:20.173Z",
+    "acknowledgedAt": "2026-01-28T01:45:07.571Z",
+    "resolvedAt": "2026-01-28T01:45:20.173Z",
+    "notes": "System: Received PO #12 (+19500 units)"
+  },
+  {
+    "id": 8,
+    "productId": 10,
+    "warehouseId": 1,
+    "status": "acknowledged",
+    "createdAt": "2026-01-28T23:24:15.223Z",
+    "updatedAt": "2026-01-28T23:24:15.223Z",
+    "acknowledgedAt": "2026-01-28T23:24:15.223Z"
   }
 ]

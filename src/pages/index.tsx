@@ -42,8 +42,7 @@ export default function Home() {
     return <ErrorState message={error} onRetry={fetchData} />;
   }
 
-  // Determine if charts should be full width (stacked) or side-by-side
-  const isLargeChart = barChartData.length > 8;
+  /* REMOVED */
 
   return (
     <Box sx={{ p: 1 }}>
@@ -110,10 +109,10 @@ export default function Home() {
 
       {/* Charts Section */}
       <Grid2 container spacing={3} sx={{ mb: 4 }}>
-        <Grid2 size={{ xs: 12, lg: isLargeChart ? 12 : 6 }}>
+        <Grid2 size={{ xs: 12, lg: 6 }}>
           <StockBarChart data={barChartData} />
         </Grid2>
-        <Grid2 size={{ xs: 12, lg: isLargeChart ? 12 : 6 }}>
+        <Grid2 size={{ xs: 12, lg: 6 }}>
           <ValueLineChart />
         </Grid2>
       </Grid2>

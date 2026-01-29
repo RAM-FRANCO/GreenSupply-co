@@ -3,8 +3,6 @@ import {
   Box,
   Typography,
   Paper,
-  TextField,
-  InputAdornment,
   MenuItem,
   Select,
   FormControl,
@@ -13,12 +11,12 @@ import {
 } from "@mui/material";
 import DeleteConfirmationDialog from "../../components/common/DeleteConfirmationDialog";
 import {
-  Search as SearchIcon,
   Add as AddIcon,
   Download as DownloadIcon,
   Inventory as InventoryIcon,
 } from "@mui/icons-material";
 import DataTable from "../../components/common/DataTable";
+import SearchInput from "../../components/common/SearchInput";
 
 
 import { useProductColumns } from "@/components/products/columns";
@@ -35,7 +33,6 @@ import { useRouter } from "next/router";
 import { usePaginatedData } from "@/hooks/usePaginatedData";
 import { useUrlParams } from "@/hooks/useUrlParams";
 import type { ProductWithStock } from "@/types/index"; 
-import type { Warehouse } from "@/types/inventory"; 
 
 export default function Products() {
   const router = useRouter();
@@ -261,23 +258,13 @@ export default function Products() {
           flexWrap: "wrap",
         }}
       >
-        <TextField
-          size="small"
+        <SearchInput
           placeholder="Search items..."
           value={localSearch}
           onChange={handleSearchChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           sx={{ flexGrow: 1, minWidth: 240 }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon color="action" fontSize="small" />
-                </InputAdornment>
-              ),
-            },
-          }}
         />
 
         <FormControl size="small" sx={{ minWidth: 160 }}>

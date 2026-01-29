@@ -124,18 +124,20 @@ export function useReferenceData() {
     error: error ? (error as Error).message : null,
     refetchStock: async () => {
       // Invalidate React Query
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.stock }),
+      const [stockResult] = await Promise.all([
+        stockQuery.refetch(),
         queryClient.invalidateQueries({ queryKey: ["purchaseOrders"] }),
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.products }),
       ]);
 
       // Invalidate SWR - Matches all product-related paginated endpoints
       await mutate(
-        (key: any) => typeof key === "string" && key.startsWith("/api/products"),
+        (key: string) => typeof key === "string" && key.startsWith("/api/products"),
         undefined,
         { revalidate: true }
       );
+
+      return stockResult;
     },
   };
 }

@@ -3,7 +3,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { Typography, Button, Chip } from "@mui/material";
 import {
   ProductCell,
-  CategoryCell,
+//   CategoryCell,
 } from "@/components/common/TableCells";
 import { StockStatusChip } from "@/components/common/StatusChip";
 import AlertActionMenu from "@/components/alerts/AlertActionMenu";
@@ -32,13 +32,13 @@ export const useAlertsColumns = ({
                     />
                 ),
             },
-            {
-                header: "Category",
-                accessorFn: (row) => row.product?.category,
-                cell: ({ row }) => (
-                    <CategoryCell category={row.original.product?.category} />
-                ),
-            },
+            // {
+            //     header: "Category",
+            //     accessorFn: (row) => row.product?.categoryName,
+            //     cell: ({ row }) => (
+            //         <CategoryCell category={row.original.product?.categoryName} />
+            //     ),
+            // },
             {
                 header: "Current Stock",
                 accessorKey: "quantity",

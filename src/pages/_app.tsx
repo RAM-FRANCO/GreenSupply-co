@@ -5,10 +5,12 @@ import CssBaseline from "@mui/material/CssBaseline";
 import theme from "@/theme/theme";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import QueryProvider from "@/components/providers/QueryProvider";
+import ChartRegistry from "@/components/dashboard/ChartRegistry";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryProvider>
+      <ChartRegistry />
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <DashboardLayout>

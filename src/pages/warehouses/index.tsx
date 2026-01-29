@@ -5,16 +5,11 @@ import {
   Box, 
   Button, 
   Grid2, 
-  TextField, 
-  InputAdornment, 
-  MenuItem, 
-  Select, 
   Paper,
-  Container,
   Skeleton,
   TablePagination
 } from "@mui/material";
-import { Search as SearchIcon, AddBusiness as AddBusinessIcon } from "@mui/icons-material";
+import { AddBusiness as AddBusinessIcon } from "@mui/icons-material";
 import DeleteConfirmationDialog from "@/components/common/DeleteConfirmationDialog";
 import PageHeader from "@/components/common/PageHeader";
 import { usePaginatedData } from "@/hooks/usePaginatedData";
@@ -24,6 +19,7 @@ import WarehouseDialog from "@/components/warehouses/WarehouseDialog";
 import { WarehouseFormData } from "@/schemas/inventorySchema";
 import WarehouseCard from "@/components/warehouses/WarehouseCard";
 import AddWarehouseCard from "@/components/warehouses/AddWarehouseCard";
+import SearchInput from "@/components/common/SearchInput";
 
 export default function Warehouses() {
   const router = useRouter();
@@ -49,7 +45,6 @@ export default function Warehouses() {
       setLocalSearch(val);
       setSearch(val);
   };
-  const [regionFilter, setRegionFilter] = useState("All Regions");
 
   const loading = warehousesLoading;
   const [openDelete, setOpenDelete] = useState(false);
@@ -163,7 +158,7 @@ export default function Warehouses() {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Box sx={{ p: 1 }}>
       <PageHeader 
         title="Warehouse Locations"
         description="Manage distribution centers and monitor capacity usage."
@@ -195,48 +190,16 @@ export default function Warehouses() {
         }}
       >
         <Box sx={{ position: "relative", width: { xs: "100%", sm: 384 } }}>
-           <TextField 
-              fullWidth
-              placeholder="Search locations, managers..."
+           <SearchInput 
               value={localSearch}
               onChange={handleSearchChange}
+              placeholder="Search locations, managers..."
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              size="small"
-              slotProps={{
-                input: {
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon color="action" />
-                        </InputAdornment>
-                    ),
-                    sx: { borderRadius: 2 }
-                }
-              }}
+              sx={{ width: "100%" }}
            />
         </Box>
-        <Box display="flex" gap={2} width={{ xs: "100%", sm: "auto" }}>
-            <Select
-                value={regionFilter}
-                onChange={(e) => setRegionFilter(e.target.value)}
-                size="small"
-                sx={{ minWidth: 140, borderRadius: 2 }}
-                displayEmpty
-            >
-                <MenuItem value="All Regions">All Regions</MenuItem>
-                <MenuItem value="North America">North America</MenuItem>
-                <MenuItem value="Europe">Europe</MenuItem>
-                <MenuItem value="Asia Pacific">Asia Pacific</MenuItem>
-            </Select>
-            <Select
-                value="Status: All"
-                size="small"
-                sx={{ minWidth: 140, borderRadius: 2 }}
-                disabled
-            >
-                <MenuItem value="Status: All">Status: All</MenuItem>
-            </Select>
-        </Box>
+    
       </Paper>
 
       {/* Content Grid */}
@@ -311,7 +274,7 @@ export default function Warehouses() {
         onPageChange={(_, newPage) => setPage(newPage + 1)}
         rowsPerPage={params.limit || 10}
         onRowsPerPageChange={(e) => {
-            setLimit(parseInt(e.target.value, 10));
+            setLimit(Number.parseInt(e.target.value, 10));
             setPage(1);
         }}
       />
@@ -332,7 +295,7 @@ export default function Warehouses() {
         title="Delete Warehouse"
         description="Are you sure you want to delete this warehouse? This action cannot be undone."
       />
-    </Container>
+    </Box>
   );
 }
 

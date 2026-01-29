@@ -155,13 +155,12 @@ export default function RecentActivity({
   loading = false,
   onViewAuditLog,
   hideHeader = false,
-  maxHeight = 400, // Default max height
 }: RecentActivityProps) {
   return (
     <Paper
       sx={{
         p: 3,
-        height: "100%",
+        height: "full",
         borderRadius: 3,
         border: 1,
         borderColor: "divider",
@@ -184,7 +183,7 @@ export default function RecentActivity({
       <Box
         sx={{
           flex: 1,
-          maxHeight,
+          maxHeight: "100%",
           overflowY: "auto",
           pr: 1,
           "&::-webkit-scrollbar": {

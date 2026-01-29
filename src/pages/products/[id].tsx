@@ -26,7 +26,6 @@ import {
   Search,
 } from "@mui/icons-material";
 import DataTable from "@/components/common/DataTable";
-import ValueLineChart from "@/components/dashboard/ValueLineChart";
 import StatCard from "@/components/common/StatCard";
 import { useQueryModal } from "@/hooks/useQueryModal";
 import ProductDialog from "@/components/products/ProductDialog";
@@ -155,13 +154,45 @@ export default function ProductDetails() {
     if (!product) return;
     setIsSubmitting(true);
     try {
-      await fetch(`/api/products/${product.id}`, {
+      const res = await fetch(`/api/products/${product.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
       });
-      mutate(`/api/products/${id}`); // Refresh SWR
-      closeModal();
+
+      if (!res.ok) throw new Error("Failed to update product");
+
+      const updatedProduct = await res.json();
+      
+      console.log("[Debug] Update Response:", updatedProduct);
+      console.log("[Debug] Current Route ID:", id);
+      console.log("[Debug] New Slug:", updatedProduct.slug);
+      console.log("[Debug] Condition check:", updatedProduct.slug && updatedProduct.slug !== id);
+
+      // If slug changed, redirect to new URL to avoid 404 on SWR re-fetch
+      // We check if the current 'id' param matches the new slug. 
+      // If 'id' was a numeric ID, this redirect will move them to the slug URL, which is also fine/better.
+      if (updatedProduct.slug && updatedProduct.slug !== id) {
+          console.log("[Debug] Initiating Redirect to:", `/products/${updatedProduct.slug}`);
+
+          // KEY FIX: Update the cache for the CURRENT (old) ID with the new data
+          // and disable revalidation. This prevents SWR from fetching 404
+          // while we are waiting for the redirect to happen.
+          console.log("[Debug] Mutating old key:", `/api/products/${id}`);
+          await mutate(`/api/products/${id}`, updatedProduct, false);
+          
+          // ALSO populate the cache for the NEW slug (destination) to prevent
+          // immediate 404 fetch upon navigation.
+          console.log("[Debug] Mutating new key:", `/api/products/${updatedProduct.slug}`);
+          await mutate(`/api/products/${updatedProduct.slug}`, updatedProduct, false);
+
+          await router.replace(`/products/${updatedProduct.slug}`);
+          console.log("[Debug] Redirect called - Skipping closeModal to prevent router conflict");
+      } else {
+          console.log("[Debug] No redirect needed, refreshing in place");
+          mutate(`/api/products/${id}`); // Refresh SWR if URL didn't change
+          closeModal();
+      }
     } catch (error) {
       console.error("Failed to update product", error);
     } finally {
@@ -272,14 +303,6 @@ export default function ProductDetails() {
     ],
     [product]
   );
-
-  const trendData = useMemo(() => [
-    { month: "Wk 1", value: 450 },
-    { month: "Wk 2", value: 420 },
-    { month: "Wk 3", value: 580 },
-    { month: "Wk 4", value: 380 },
-    { month: "Now", value: stats?.totalStock || 0 },
-  ], [stats]);
 
   if (productError) {
       // ... error View

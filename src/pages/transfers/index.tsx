@@ -201,7 +201,6 @@ export default function TransfersPage() {
             events={activityEvents}
             loading={loading}
             hideHeader
-            maxHeight={450}
           />
         </Grid2>
       </Grid2>

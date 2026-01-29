@@ -35,7 +35,7 @@ export interface AlertRecord {
  * Combines live stock data with persisted tracking info
  */
 export interface EnrichedAlert extends Omit<AlertRecord, 'productId' | 'warehouseId'> {
-  product: { id: number; name: string; sku: string; category: string };
+  product: { id: number; name: string; sku: string; categoryId: string };
   warehouse: { id: number; name: string; code: string };
   currentStock: number;
   reorderPoint: number;

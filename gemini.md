@@ -142,3 +142,44 @@ npm run lint
 - MUI components are used throughout for consistent UI
 - State management is done via React's useState/useEffect hooks
 - No TypeScript - plain JavaScript implementation
+
+## Component Reusability Protocol
+
+To prevent code duplication and ensure a maintainable codebase, you **MUST** follow this protocol before creating any new component.
+
+### 1. The "Search First" Mandate
+**BEFORE** creating any new component, you must demonstrably search the codebase for existing solutions.
+- **Rule**: You cannot reuse what you don't see. You must actively look.
+- **Action**: Use `find_by_name` or `grep_search` to look for similar existing names or functionality.
+    - *Example*: If building a `UserCard`, search for "Card", "User", "Profile".
+    - *Strictness*: Any PR/Code that introduces a duplicate simple component without this search trace will be rejected.
+
+### 2. Decision Tree for Reusability
+
+When needing a UI element, follow this decision tree:
+
+1.  **Does a similar component exist?**
+    *   (Search `src/components` using broad keywords)
+    *   **YES**: Go to step 2.
+    *   **NO**: Go to step 4 (Create New).
+
+2.  **Can the existing component be used *exactly* as is?**
+    *   **YES**: Import and use it. DO NOT duplicate.
+    *   **NO**: Go to step 3.
+
+3.  **Can the existing component be easily extended?**
+    *   (e.g., adding a prop, a variant, or a slot? Is it < 300 lines?)
+    *   **YES**: Refactor the existing component to support the new use case.
+        *   *Constraint*: Must not break existing usages (verify with `grep_search` for usages).
+    *   **NO**: (It's too different or too complex/rigid). Go to step 4.
+
+4.  **Create New Component**
+    *   **Action**: Create the new file.
+    *   **Location**:
+        *   If used in multiple features -> `src/components/common/` or `src/components/shared/`
+        *   If specific to a feature -> `src/components/[feature_name]/`
+    *   **Post-Action**: Adhere to the "Micro-Files" rule (~300 lines).
+
+### 5. Mandate on Reusability
+**CRITICAL**: Avoid using or creating new components unless there's no components that can be reuse. Always prioritize refactoring existing components over creating new ones.
+

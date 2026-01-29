@@ -68,7 +68,9 @@ export default createApiHandler({
       // Remove alerts for this warehouse
       // Note: We need to define AlertRecord or type it as any if not available easily, but better to import
       // Assuming generic structure or importing types
-      const alerts = readJsonFile<any>("alerts.json");
+      const alerts = readJsonFile("alerts.json");
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newAlerts = alerts.filter((a: any) => a.warehouseId !== warehouseId);
       if (alerts.length !== newAlerts.length) {
         writeJsonFile("alerts.json", newAlerts);

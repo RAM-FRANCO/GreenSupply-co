@@ -20,8 +20,6 @@ import {
     Search,
     EditLocation,
     LocalShipping,
-    Description,
-    Warning,
     Place,
     Person,
     Call

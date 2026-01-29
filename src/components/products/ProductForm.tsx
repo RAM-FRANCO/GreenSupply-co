@@ -21,7 +21,6 @@ import {
   ProductFormSchema,
   type ProductFormData,
 } from "@/schemas/inventorySchema";
-import { PRODUCT_CATEGORIES } from "@/utils/constants";
 
 import type { Category } from "@/types/category";
 

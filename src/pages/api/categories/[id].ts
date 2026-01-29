@@ -67,7 +67,9 @@ export default createApiHandler({
         }
 
         // 4. Delete Alerts for these products
-        const alerts = readJsonFile<any>("alerts.json");
+        const alerts = readJsonFile("alerts.json");
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const newAlerts = alerts.filter((a: any) => !productIds.includes(a.productId));
         if (alerts.length !== newAlerts.length) {
           writeJsonFile("alerts.json", newAlerts);

@@ -46,5 +46,14 @@
     "name": "Napkins",
     "icon": "layers",
     "color": "gray"
+  },
+  {
+    "name": "test categ",
+    "color": "green",
+    "icon": "category",
+    "productCount": 0,
+    "totalItems": 0,
+    "totalValue": 0,
+    "id": "test-categ"
   }
 ]

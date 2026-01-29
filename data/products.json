@@ -64,5 +64,27 @@
     "reorderPoint": 3,
     "description": "test",
     "image": "/uploads/1769561895142_icon-512 (1).png"
+  },
+  {
+    "id": 9,
+    "slug": "tes2t",
+    "sku": "test",
+    "name": "tes2t",
+    "categoryId": "cups",
+    "unitCost": 2,
+    "reorderPoint": 10000,
+    "description": "testt",
+    "image": "/uploads/1769564650983_disc_type_clarity.webp"
+  },
+  {
+    "id": 10,
+    "slug": "this-is-new-product-name",
+    "sku": "ECO2-UTN-001",
+    "name": "This is new product name",
+    "categoryId": "test-categ",
+    "unitCost": 20,
+    "reorderPoint": 200,
+    "description": "THIS IS A TEST",
+    "image": "/uploads/1769641418658_icon-512 (1).png"
   }
 ]

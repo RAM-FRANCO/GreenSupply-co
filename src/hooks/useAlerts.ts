@@ -132,7 +132,7 @@ export function useAlerts(): UseAlertsResult {
 
       // Invalidate SWR
       mutate(
-        (key: any) => typeof key === "string" && key.startsWith("/api/products"),
+        (key: string) => typeof key === "string" && key.startsWith("/api/products"),
         undefined,
         { revalidate: true }
       );

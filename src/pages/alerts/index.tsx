@@ -3,7 +3,6 @@ import { useInventoryData, type EnrichedStock } from "@/hooks/useInventoryData";
 import { customPalette } from "@/theme/theme";
 import { getStockStatus } from "@/utils/stockUtils";
 import {
-  Container,
   Button,
   Box,
   Paper,
@@ -162,7 +161,7 @@ export default function AlertsPage() {
         (item) =>
           item.product?.name.toLowerCase().includes(lower) ||
           item.product?.sku.toLowerCase().includes(lower) ||
-          item.product?.category.toLowerCase().includes(lower),
+          item.product?.categoryId.toLowerCase().includes(lower),
       );
     }
     return data.sort((a, b) => {
@@ -186,7 +185,7 @@ export default function AlertsPage() {
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Box sx={{ p: 1 }}>
       {/* Header */}
       <PageHeader
         title="Alerts & Stock Health"
@@ -396,6 +395,6 @@ export default function AlertsPage() {
         orders={purchaseOrders}
         onReceive={receiveOrder}
       />
-    </Container>
+    </Box>
   );
 }

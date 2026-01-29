@@ -36,12 +36,10 @@ export default function TransferForm({
     loading,
     initialLoading,
     submitError,
-    success,
     handleNext,
     handleBack,
     handleSubmit,
     clearSubmitError,
-    clearSuccess,
   } = useTransferFormLogic(onTransferComplete);
 
   if (initialLoading) {

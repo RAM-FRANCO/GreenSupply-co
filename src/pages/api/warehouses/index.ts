@@ -39,7 +39,8 @@ export default createApiHandler({
       const filtered = enrichedWarehouses.filter(w => {
         if (!search) return true;
         return w.name.toLowerCase().includes(search) ||
-          w.location.toLowerCase().includes(search);
+          w.location.toLowerCase().includes(search) ||
+          w.managerName?.toLowerCase().includes(search);
       });
 
       const total = filtered.length;
@@ -64,7 +65,7 @@ export default createApiHandler({
       const body = req.body as WarehouseFormData;
       const newWarehouse: Warehouse = {
         id: getNextId(warehouses),
-        slug: body.name.toLowerCase().replace(/\s+/g, '-'),
+        slug: body.name.toLowerCase().replaceAll(/\s+/g, '-'),
         ...body,
       };
 

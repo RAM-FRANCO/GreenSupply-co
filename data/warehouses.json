@@ -5,8 +5,8 @@
     "slug": "main-distribution-center",
     "location": "Newark, NJ",
     "code": "NDC-01",
-    "maxSlots": 10000,
-    "type": "Cold Storage",
+    "maxSlots": 100000,
+    "type": "Distribution Center",
     "managerName": "Michael Brown"
   },
   {
@@ -34,5 +34,15 @@
     "maxSlots": 500,
     "type": "Fulfillment Center",
     "id": 4
+  },
+  {
+    "id": 5,
+    "slug": "unit-a",
+    "code": "UA-30",
+    "name": "Unit A",
+    "location": "123 Warehouse Blvd  Suite 456  Logistics City, CA 90210",
+    "managerName": "Ram Franco",
+    "maxSlots": 500,
+    "type": "Distribution Center"
   }
 ]

@@ -18,7 +18,6 @@ import Inventory2Icon from "@mui/icons-material/Inventory2";
 import CategoryIcon from "@mui/icons-material/Category";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SpaIcon from "@mui/icons-material/Spa";

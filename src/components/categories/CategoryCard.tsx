@@ -124,7 +124,7 @@ export default function CategoryCard({
               Total Items
             </Typography>
             <Typography variant="h6" fontWeight="bold">
-              {category.totalItems.toLocaleString()}
+              {category.totalItems?.toLocaleString()}
             </Typography>
           </Box>
           <Box sx={{ textAlign: "right" }}>
@@ -137,7 +137,7 @@ export default function CategoryCard({
               Value
             </Typography>
             <Typography variant="h6" fontWeight="bold">
-              ${category.totalValue.toLocaleString()}
+              ${category.totalValue?.toLocaleString()}
             </Typography>
           </Box>
         </Box>

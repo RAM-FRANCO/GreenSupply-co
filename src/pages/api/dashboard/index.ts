@@ -64,8 +64,11 @@ export default createApiHandler({
             // Sum quantities by category
             stock.forEach(item => {
                 const product = products.find(p => p.id === item.productId);
-                if (product?.category) {
-                    stockByCategory[product.category] = (stockByCategory[product.category] || 0) + item.quantity;
+                if (product?.categoryId) {
+                    const category = categories.find(c => c.id === product.categoryId);
+                    if (category) {
+                        stockByCategory[category.name] = (stockByCategory[category.name] || 0) + item.quantity;
+                    }
                 }
             });
 

@@ -46,7 +46,7 @@ export const useProductFiltering = ({ products, stocks }: UseProductFilteringPro
           p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           p.sku.toLowerCase().includes(searchTerm.toLowerCase());
         const matchCategory =
-          categoryFilter === "All" || p.category === categoryFilter;
+          categoryFilter === "All" || p.categoryId === categoryFilter;
         const matchStatus =
           statusFilter === "All" || p.stockStatus === statusFilter;
 

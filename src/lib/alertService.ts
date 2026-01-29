@@ -108,7 +108,7 @@ export const queryAlerts = (filters: {
         id: product.id,
         name: product.name,
         sku: product.sku,
-        category: product.category,
+        categoryId: product.categoryId,
       },
       warehouse: {
         id: warehouse.id,
